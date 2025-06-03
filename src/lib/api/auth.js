@@ -1,5 +1,5 @@
 import Cookies from "js-cookie";
-import client from "./client";
+import { client } from "./client";
 
 export const signUp = (params) => {
   return client.post("auth", params);
