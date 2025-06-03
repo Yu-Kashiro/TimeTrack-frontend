@@ -7,6 +7,10 @@
     "module": "ESNext",
     "skipLibCheck": true,
 
+    // jsファイルもコンパイル対象にする
+    "allowJs": true,
+    "checkJs": false,
+
     "paths": {
       "@/*": ["./src/*"]
     },
