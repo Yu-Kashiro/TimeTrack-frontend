@@ -1,21 +1,22 @@
-import { getUser, signUp } from "@/lib/api/auth";
-import { Box, Field, Heading } from "@chakra-ui/react";
+import { getUser, signIn } from "@/lib/api/auth";
+import { Box } from "@chakra-ui/react/box";
 import { Button } from "@chakra-ui/react/button";
 import { Input } from "@chakra-ui/react/input";
 import { Stack } from "@chakra-ui/react/stack";
 import { useEffect, useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import Cookies from "js-cookie";
+import { Field } from "@chakra-ui/react/field";
+import { Heading } from "@chakra-ui/react/typography";
 
-export const SignUp = () => {
-  const [name, setName] = useState("");
+export const SignIn = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
 
-  const register = async () => {
+  const login = async () => {
     try {
-      const res = await signUp({ name, email, password });
+      const res = await signIn({ email, password });
       Cookies.set("_access_token", res.headers["access-token"]);
       Cookies.set("_client", res.headers["client"]);
       Cookies.set("_uid", res.headers["uid"]);
@@ -41,16 +42,8 @@ export const SignUp = () => {
 
   return (
     <Stack justify="center">
-      <Heading size="2xl" mb={5}>新規登録</Heading>
+      <Heading size="2xl" mb={5}>ログイン</Heading>
       <Field.Root>
-        <Field.Label>名前</Field.Label>
-        <Input
-          type="text"
-          autoComplete="name"
-          mb="16px"
-          value={name}
-          onChange={(event) => setName(event.target.value)}
-        />
         <Field.Label>メールアドレス</Field.Label>
         <Input
           type="email"
@@ -67,11 +60,15 @@ export const SignUp = () => {
         />
       </Field.Root>
 
-      <Button mb="8px" onClick={register}>
-        登録する
+      <Button mb="8px" onClick={login}>
+        ログインする
       </Button>
+
       <Box>
-        <Link to="../signin">ログインはこちら</Link>
+        <Link to="../signup">ユーザー登録はこちら</Link>
+      </Box>
+      <Box>
+        <Link to="">パスワードを再設定</Link>
       </Box>
     </Stack>
   );
