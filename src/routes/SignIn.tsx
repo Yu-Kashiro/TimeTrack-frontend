@@ -1,37 +1,36 @@
 import { getUser, signIn } from "@/lib/api/auth";
-import { Box } from "@chakra-ui/react/box";
 import { Button } from "@chakra-ui/react/button";
 import { Input } from "@chakra-ui/react/input";
 import { Stack } from "@chakra-ui/react/stack";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import Cookies from "js-cookie";
 import { Field } from "@chakra-ui/react/field";
 import { Heading } from "@chakra-ui/react/typography";
+import { useForm } from "react-hook-form";
+import { PasswordInput } from "@/components/ui/password-input";
+import { Box } from "@chakra-ui/react/box";
+import Cookies from "js-cookie";
+
+
+interface FormValues {
+  email: string;
+  password: string;
+}
 
 export const SignIn = () => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
   const navigate = useNavigate();
-
-  const login = async () => {
-    try {
-      const res = await signIn({ email, password });
-      Cookies.set("_access_token", res.headers["access-token"]);
-      Cookies.set("_client", res.headers["client"]);
-      Cookies.set("_uid", res.headers["uid"]);
-      navigate("/time-entry");
-    } catch (e) {
-      console.log(e);
-    }
-  };
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<FormValues>();
 
   useEffect(() => {
     const checkLoginStatus = async () => {
       try {
         const res = await getUser();
         if (res && res.data && res.data.isLogin) {
-          navigate("/time-entry");
+          navigate("/work_times/registration");
         }
       } catch (e) {
         console.log(e);
@@ -40,36 +39,45 @@ export const SignIn = () => {
     checkLoginStatus();
   }, [navigate]);
 
+  const onSubmit = handleSubmit( async (data) => {
+    console.log(data);
+    try {
+      const res = await signIn(data);
+      console.log(res)
+      Cookies.set("_access_token", res.headers["access-token"]);
+      Cookies.set("_client", res.headers["client"]);
+      Cookies.set("_uid", res.headers["uid"]);
+      navigate("/work_times/registration");
+    } catch (e) {
+      console.log(e);
+    }
+  });
+
   return (
-    <Stack justify="center">
-      <Heading size="2xl" mb={5}>ログイン</Heading>
-      <Field.Root>
-        <Field.Label>メールアドレス</Field.Label>
-        <Input
-          type="email"
-          mb="16px"
-          value={email}
-          onChange={(event) => setEmail(event.target.value)}
-        />
-        <Field.Label>パスワード</Field.Label>
-        <Input
-          type="password"
-          mb="16px"
-          value={password}
-          onChange={(event) => setPassword(event.target.value)}
-        />
-      </Field.Root>
+    <form onSubmit={onSubmit}>
+      <Stack gap="4" justify="center">
+        <Heading size="2xl" mb={5}>ログイン</Heading>
+        <Field.Root invalid={!!errors.email}>
+          <Field.Label>メールアドレス</Field.Label>
+          <Input {...register("email")} />
+          <Field.ErrorText>{errors.email?.message}</Field.ErrorText>
+        </Field.Root>
 
-      <Button mb="8px" onClick={login}>
-        ログインする
-      </Button>
+        <Field.Root invalid={!!errors.password}>
+          <Field.Label>パスワード</Field.Label>
+          <PasswordInput {...register("password")} />
+          <Field.ErrorText>{errors.password?.message}</Field.ErrorText>
+        </Field.Root>
 
-      <Box>
-        <Link to="../signup">ユーザー登録はこちら</Link>
-      </Box>
-      <Box>
-        <Link to="">パスワードを再設定</Link>
-      </Box>
-    </Stack>
+        <Button colorPalette={"blue"} variant="subtle" type="submit" mt={5} color={"black"}>ログインする</Button>
+        <Box>
+          <Link to="../signup">ユーザー登録はこちら</Link>
+        </Box>
+        <Box>
+          <Link to="">パスワードを再設定</Link>
+        </Box>
+
+      </Stack>
+    </form>
   );
 };
