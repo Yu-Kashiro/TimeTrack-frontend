@@ -2,11 +2,16 @@ import { HStack } from "@chakra-ui/react/stack";
 import reactLogo from "../assets/react.svg";
 import viteLogo from "/vite.svg";
 import railsLogo from "../assets/rails.svg";
+import { ColorModeButton } from "./ui/color-mode";
+import { Box } from "@chakra-ui/react/box";
 
 export const Footer = () => {
   return (
     <>
-      <HStack justify="center" mt={120}>
+      <Box mt={120}>
+        <ColorModeButton />
+      </Box>
+      <HStack justify="center">
         <a href="https://vite.dev" target="_blank">
           <img src={viteLogo} className="logo" alt="Vite logo" />
         </a>
