@@ -11,6 +11,7 @@ import {
   Table,
 } from "@chakra-ui/react";
 import { useState } from "react";
+import { BsZoomIn } from "react-icons/bs";
 
 export const WorkTimes = () => {
   const [selection, setSelection] = useState<string[]>([]);
@@ -44,13 +45,18 @@ export const WorkTimes = () => {
       <Table.Cell>{item.date}</Table.Cell>
       <Table.Cell>{item.workMinutes}</Table.Cell>
       <Table.Cell>{item.breakDurationMinute}</Table.Cell>
+      <Table.Cell>
+        <BsZoomIn />
+      </Table.Cell>
     </Table.Row>
   ));
 
   return (
     <Box w="100%">
-      <Heading size="2xl" mb={5}>出勤一覧</Heading>
-      <Table.Root key="outline" variant="outline" >
+      <Heading size="2xl" mb={5}>
+        出勤一覧
+      </Heading>
+      <Table.Root key="outline" variant="outline">
         <Table.Header>
           <Table.Row>
             <Table.ColumnHeader w="6">
@@ -72,6 +78,7 @@ export const WorkTimes = () => {
             <Table.ColumnHeader>日付</Table.ColumnHeader>
             <Table.ColumnHeader>出勤時間</Table.ColumnHeader>
             <Table.ColumnHeader>休憩時間</Table.ColumnHeader>
+            <Table.ColumnHeader>詳細</Table.ColumnHeader>
           </Table.Row>
         </Table.Header>
         <Table.Body>{rows}</Table.Body>
@@ -100,6 +107,154 @@ export const WorkTimes = () => {
 };
 
 const items = [
-  { id: 1, date: "6月7日", workMinutes: "7時間45分", breakDurationMinute: "1時間" },
-
+  {
+    id: 1,
+    date: "6月7日",
+    workMinutes: "7時間45分",
+    breakDurationMinute: "1時間",
+  },
+  {
+    id: 1,
+    date: "6月7日",
+    workMinutes: "7時間45分",
+    breakDurationMinute: "1時間",
+  },
+  {
+    id: 1,
+    date: "6月7日",
+    workMinutes: "7時間45分",
+    breakDurationMinute: "1時間",
+  },
+  {
+    id: 1,
+    date: "6月7日",
+    workMinutes: "7時間45分",
+    breakDurationMinute: "1時間",
+  },
+  {
+    id: 1,
+    date: "6月7日",
+    workMinutes: "7時間45分",
+    breakDurationMinute: "1時間",
+  },
+  {
+    id: 1,
+    date: "6月7日",
+    workMinutes: "7時間45分",
+    breakDurationMinute: "1時間",
+  },
+  {
+    id: 1,
+    date: "6月7日",
+    workMinutes: "7時間45分",
+    breakDurationMinute: "1時間",
+  },
+  {
+    id: 1,
+    date: "6月7日",
+    workMinutes: "7時間45分",
+    breakDurationMinute: "1時間",
+  },
+  {
+    id: 1,
+    date: "6月7日",
+    workMinutes: "7時間45分",
+    breakDurationMinute: "1時間",
+  },
+  {
+    id: 1,
+    date: "6月7日",
+    workMinutes: "7時間45分",
+    breakDurationMinute: "1時間",
+  },
+  {
+    id: 1,
+    date: "6月7日",
+    workMinutes: "7時間45分",
+    breakDurationMinute: "1時間",
+  },
+  {
+    id: 1,
+    date: "6月7日",
+    workMinutes: "7時間45分",
+    breakDurationMinute: "1時間",
+  },
+  {
+    id: 1,
+    date: "6月7日",
+    workMinutes: "7時間45分",
+    breakDurationMinute: "1時間",
+  },
+  {
+    id: 1,
+    date: "6月7日",
+    workMinutes: "7時間45分",
+    breakDurationMinute: "1時間",
+  },
+  {
+    id: 1,
+    date: "6月7日",
+    workMinutes: "7時間45分",
+    breakDurationMinute: "1時間",
+  },
+  {
+    id: 1,
+    date: "6月7日",
+    workMinutes: "7時間45分",
+    breakDurationMinute: "1時間",
+  },
+  {
+    id: 1,
+    date: "6月7日",
+    workMinutes: "7時間45分",
+    breakDurationMinute: "1時間",
+  },
+  {
+    id: 1,
+    date: "6月7日",
+    workMinutes: "7時間45分",
+    breakDurationMinute: "1時間",
+  },
+  {
+    id: 1,
+    date: "6月7日",
+    workMinutes: "7時間45分",
+    breakDurationMinute: "1時間",
+  },
+  {
+    id: 1,
+    date: "6月7日",
+    workMinutes: "7時間45分",
+    breakDurationMinute: "1時間",
+  },
+  {
+    id: 1,
+    date: "6月7日",
+    workMinutes: "7時間45分",
+    breakDurationMinute: "1時間",
+  },
+  {
+    id: 1,
+    date: "6月7日",
+    workMinutes: "7時間45分",
+    breakDurationMinute: "1時間",
+  },
+  {
+    id: 1,
+    date: "6月7日",
+    workMinutes: "7時間45分",
+    breakDurationMinute: "1時間",
+  },
+  {
+    id: 1,
+    date: "6月7日",
+    workMinutes: "7時間45分",
+    breakDurationMinute: "1時間",
+  },
+  {
+    id: 1,
+    date: "6月7日",
+    workMinutes: "7時間45分",
+    breakDurationMinute: "1時間",
+  },
 ];
