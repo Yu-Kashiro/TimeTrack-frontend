@@ -8,6 +8,7 @@ import { Registration } from './routes/Registration.tsx'
 import { SignUp } from './routes/SignUp.tsx'
 import { SignIn } from './routes/SignIn.tsx'
 import { WorkTimes } from './routes/WorkTimes.tsx'
+import { Detail } from './routes/Detail.tsx'
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
@@ -20,6 +21,7 @@ createRoot(document.getElementById('root')!).render(
             <Route path="signup" element={<SignUp />} />
             <Route path="work_times/registration" element={<Registration />} />
             <Route path="work_times/index" element={<WorkTimes />} />
+            <Route path="work_times/detail" element={<Detail />} />
           </Route>
         </Routes>
       </BrowserRouter>
