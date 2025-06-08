@@ -5,6 +5,7 @@ import {
   Box,
   Button,
   Checkbox,
+  Flex,
   Heading,
   Kbd,
   Portal,
@@ -12,6 +13,7 @@ import {
 } from "@chakra-ui/react";
 import { useState } from "react";
 import { BsZoomIn } from "react-icons/bs";
+import { Link } from "react-router-dom";
 
 export const WorkTimes = () => {
   const [selection, setSelection] = useState<string[]>([]);
@@ -24,7 +26,7 @@ export const WorkTimes = () => {
       key={item.date}
       data-selected={selection.includes(item.date) ? "" : undefined}
     >
-      <Table.Cell>
+      <Table.Cell textAlign="center">
         <Checkbox.Root
           size="sm"
           top="0.5"
@@ -42,11 +44,15 @@ export const WorkTimes = () => {
           <Checkbox.Control />
         </Checkbox.Root>
       </Table.Cell>
-      <Table.Cell>{item.date}</Table.Cell>
-      <Table.Cell>{item.workMinutes}</Table.Cell>
-      <Table.Cell>{item.breakDurationMinute}</Table.Cell>
+      <Table.Cell textAlign="center">{item.date}</Table.Cell>
+      <Table.Cell textAlign="center">{item.workMinutes}</Table.Cell>
+      <Table.Cell textAlign="center">{item.breakDurationMinute}</Table.Cell>
       <Table.Cell>
-        <BsZoomIn />
+        <Flex justify="center">
+          <Link to="/work_times/detail">
+            <BsZoomIn />
+          </Link>
+        </Flex>
       </Table.Cell>
     </Table.Row>
   ));
@@ -75,10 +81,10 @@ export const WorkTimes = () => {
                 <Checkbox.Control />
               </Checkbox.Root>
             </Table.ColumnHeader>
-            <Table.ColumnHeader>日付</Table.ColumnHeader>
-            <Table.ColumnHeader>出勤時間</Table.ColumnHeader>
-            <Table.ColumnHeader>休憩時間</Table.ColumnHeader>
-            <Table.ColumnHeader>詳細</Table.ColumnHeader>
+            <Table.ColumnHeader textAlign="center">日付</Table.ColumnHeader>
+            <Table.ColumnHeader textAlign="center">出勤時間</Table.ColumnHeader>
+            <Table.ColumnHeader textAlign="center">休憩時間</Table.ColumnHeader>
+            <Table.ColumnHeader textAlign="center">詳細</Table.ColumnHeader>
           </Table.Row>
         </Table.Header>
         <Table.Body>{rows}</Table.Body>
