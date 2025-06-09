@@ -17,19 +17,25 @@ export const Registration = () => {
   const [workDate, setWorkDate] = useState(todayDate);
   const [clockIn, setClockIn] = useState("08:30");
   const [clockOut, setClockOut] = useState("17:15");
-  const [breakTimeMinute, setBreakTimeMinute] = useState("01:00");
-  const [memo, setMemo] = useState("");
+  const [breakDurationMinute, setBreakDurationMinute] = useState("01:00");
+  const [note, setNote] = useState("");
   const [isPaidVacation, setIsPaidVacation] = useState(false);
   const navigate = useNavigate();
 
-  const createEvent = async (event) => {
-    await createCalendarEvent({
-      title: event.title,
-      description: event.description,
-      startDate: event.startDate,
-      endDate: event.endDate,
+  const createWorkTimeEvent = async (event) => {
+    console.log(event)
+    console.log("createWorkTimeEventの実行")
+    await createWorkTime({
+      workDate: event.workDate,
+      clockIn: event.clockIn,
+      clockOut: event.clockOut,
+      breakDurationMinute: event.breakDurationMinute,
+      note: event.note,
     });
   };
+
+
+
 
   return (
     <Stack>
@@ -86,9 +92,9 @@ export const Registration = () => {
             </Field.Label>
             <Input
               type="time"
-              value={breakTimeMinute}
+              value={breakDurationMinute}
               step="60"
-              onChange={(e) => setBreakTimeMinute(e.target.value)}
+              onChange={(e) => setBreakDurationMinute(e.target.value)}
               disabled={isPaidVacation}
             />
           </Flex>
@@ -101,9 +107,9 @@ export const Registration = () => {
             </Field.Label>
             <Input
               type="text"
-              value={memo}
+              value={note}
               autoComplete="off"
-              onChange={(e) => setMemo(e.target.value)}
+              onChange={(e) => setNote(e.target.value)}
             />
           </Flex>
         </Box>
@@ -118,11 +124,11 @@ export const Registration = () => {
             if (e.checked) {
               setClockIn("");
               setClockOut("");
-              setBreakTimeMinute("");
+              setBreakDurationMinute("");
             } else {
               setClockIn("08:30");
               setClockOut("17:15");
-              setBreakTimeMinute("01:00");
+              setBreakDurationMinute("01:00");
             }
           }}
         >
@@ -136,12 +142,12 @@ export const Registration = () => {
         colorPalette={"blue"}
         variant="subtle"
         onClick={() => {
-          createWorkTime({
+          createWorkTimeEvent({
             workDate,
             clockIn,
             clockOut,
-            breakTimeMinute,
-            memo,
+            breakDurationMinute,
+            note,
             isPaidVacation,
           });
           navigate("/work_times/index");
