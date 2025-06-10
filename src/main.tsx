@@ -4,11 +4,11 @@ import './index.css'
 import { App } from './App.tsx'
 import { Provider } from './components/ui/provider.tsx'
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom'
-import { Registration } from './routes/Registration.tsx'
-import { SignUp } from './routes/SignUp.tsx'
-import { SignIn } from './routes/SignIn.tsx'
-import { WorkTimes } from './routes/WorkTimes.tsx'
-import { Detail } from './routes/Detail.tsx'
+import { Registration } from './pages/Registration.tsx'
+import { SignUp } from './pages/SignUp.tsx'
+import { SignIn } from './pages/SignIn.tsx'
+import { WorkTimes } from './pages/WorkTimes.tsx'
+import { Detail } from './pages/WorkTimeDetail.tsx'
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
