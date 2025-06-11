@@ -56,41 +56,16 @@ export const WorkTimes = () => {
               </Table.Row>
             ))}
           </Table.Body>
+          <Table.Footer>
+            <Table.Row>
+              <Table.Cell>合計</Table.Cell>
+              <Table.Cell>160時間45分</Table.Cell>
+              <Table.Cell>20時間</Table.Cell>
+              <Table.Cell>ー</Table.Cell>
+            </Table.Row>
+          </Table.Footer>
         </Table.Root>
       </Stack>
     </>
   );
 };
-
-// [
-//   {
-//     id: 1,
-//     date: "12月31日",
-//     workMinute: "7時間45分",
-//     breakDurationMinute: "1時間00分",
-//   },
-//   {
-//     id: 2,
-//     date: "12月31日",
-//     workMinute: "7時間45分",
-//     breakDurationMinute: "1時間00分",
-//   },
-//   {
-//     id: 3,
-//     date: "12月31日",
-//     workMinute: "7時間45分",
-//     breakDurationMinute: "1時間00分",
-//   },
-//   {
-//     id: 4,
-//     date: "12月31日",
-//     workMinute: "7時間45分",
-//     breakDurationMinute: "1時間00分",
-//   },
-//   {
-//     id: 5,
-//     date: "12月31日",
-//     workMinute: "7時間45分",
-//     breakDurationMinute: "1時間00分",
-//   },
-// ];
