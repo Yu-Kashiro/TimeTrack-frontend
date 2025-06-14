@@ -1,4 +1,3 @@
-import { ColorModeButton } from "./ui/color-mode";
 import { Box } from "@chakra-ui/react/box";
 import { Link } from "react-router-dom";
 
@@ -13,9 +12,6 @@ export const Footer = () => {
       </Box>
       <Box>
         <Link to="/work_times/registration">registration</Link>
-      </Box>
-      <Box mt={120}>
-        <ColorModeButton />
       </Box>
     </>
   );
