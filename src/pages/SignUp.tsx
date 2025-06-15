@@ -1,30 +1,20 @@
 import { getUser, signUp } from "@/lib/api/auth";
-import { Button } from "@chakra-ui/react/button";
 import { Input } from "@chakra-ui/react/input";
-import { Stack } from "@chakra-ui/react/stack";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Field } from "@chakra-ui/react/field";
-import { Heading } from "@chakra-ui/react/typography";
 import { useForm } from "react-hook-form";
 import { PasswordInput } from "@/components/ui/password-input";
 import { Box } from "@chakra-ui/react/box";
 import Cookies from "js-cookie";
-
-
-interface FormValues {
-  name: string;
-  email: string;
-  password: string;
-}
+import type { SignUpFormValues } from "@/types/forms";
+import { Layout } from "@/lib/utils/Layout";
+import { MainButton } from "@/lib/utils/MainButton";
+import { ErrorMessage } from "@/lib/utils/ErrorMessage";
 
 export const SignUp = () => {
   const navigate = useNavigate();
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm<FormValues>();
+  const [errorMessage, setErrorMessage] = useState("");
 
   useEffect(() => {
     const checkLoginStatus = async () => {
@@ -40,25 +30,36 @@ export const SignUp = () => {
     checkLoginStatus();
   }, [navigate]);
 
-  const onSubmit = handleSubmit( async (data) => {
+  // react-hook-form
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<SignUpFormValues>();
+
+  // react-hook-form
+  const onSubmit = handleSubmit(async (data) => {
     console.log(data);
     try {
       const res = await signUp(data);
-      console.log(res)
+      console.log("signUpが成功し、レスポンスが帰ってきました。");
+      console.log(res);
       Cookies.set("_access_token", res.headers["access-token"]);
       Cookies.set("_client", res.headers["client"]);
       Cookies.set("_uid", res.headers["uid"]);
       navigate("/work_times/registration");
     } catch (e) {
       console.log(e);
+      setErrorMessage(
+        "新規登録に失敗しました。氏名、メールアドレス、パスワードを確認してください。"
+      );
     }
   });
 
   return (
     <form onSubmit={onSubmit}>
-      <Stack gap="4" justify="center">
-        <Heading size="2xl" mb={5}>新規登録</Heading>
-
+      <Layout title="新規登録">
+        {/* react-hook-form */}
         <Field.Root invalid={!!errors.name}>
           <Field.Label>氏名</Field.Label>
           <Input {...register("name")} />
@@ -77,12 +78,16 @@ export const SignUp = () => {
           <Field.ErrorText>{errors.password?.message}</Field.ErrorText>
         </Field.Root>
 
-        <Button colorPalette={"blue"} variant="subtle" type="submit" mt={5} color={"black"}>登録する</Button>
+        <MainButton colorPalette="blue" color="black">
+          登録する
+        </MainButton>
+
+        <ErrorMessage errorMessage={errorMessage} />
+
         <Box>
           <Link to="../signin">ログインはこちら</Link>
         </Box>
-
-      </Stack>
+      </Layout>
     </form>
   );
 };
