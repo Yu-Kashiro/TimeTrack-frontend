@@ -1,0 +1,82 @@
+import { Button, Heading, Stack, Table } from "@chakra-ui/react";
+
+export const Detail = () => {
+  return (
+    <Stack>
+      <Heading size="2xl" mb={5}>
+        出勤詳細
+      </Heading>
+
+      <Table.Root size="md">
+        <Table.Body>
+          <Table.Row>
+            <Table.Cell>日付</Table.Cell>
+            <Table.Cell>6月8日(月)</Table.Cell>
+          </Table.Row>
+        </Table.Body>
+        <Table.Body>
+          <Table.Row>
+            <Table.Cell>始業時間</Table.Cell>
+            <Table.Cell>8時30分</Table.Cell>
+          </Table.Row>
+        </Table.Body>
+        <Table.Body>
+          <Table.Row>
+            <Table.Cell>終業時間</Table.Cell>
+            <Table.Cell>17時15分</Table.Cell>
+          </Table.Row>
+        </Table.Body>
+        <Table.Body>
+          <Table.Row>
+            <Table.Cell>勤務時間</Table.Cell>
+            <Table.Cell>7時間45分</Table.Cell>
+          </Table.Row>
+        </Table.Body>
+        <Table.Body>
+          <Table.Row>
+            <Table.Cell>休憩時間</Table.Cell>
+            <Table.Cell>1時間</Table.Cell>
+          </Table.Row>
+        </Table.Body>
+        <Table.Body>
+          <Table.Row>
+            <Table.Cell>備考</Table.Cell>
+            <Table.Cell>テストだよ</Table.Cell>
+          </Table.Row>
+        </Table.Body>
+        <Table.Body>
+          <Table.Row>
+            <Table.Cell>有給休暇</Table.Cell>
+            <Table.Cell></Table.Cell>
+          </Table.Row>
+        </Table.Body>
+        <Table.Body>
+          <Table.Row>
+            <Table.Cell>承認有無</Table.Cell>
+            <Table.Cell>承認済み</Table.Cell>
+          </Table.Row>
+        </Table.Body>
+      </Table.Root>
+      <Button
+        colorPalette={"blue"}
+        variant="subtle"
+        type="submit"
+        mt={5}
+        color={"black"}
+        size="xl"
+      >
+        修正する
+      </Button>
+      <Button
+        colorPalette={"red"}
+        variant="subtle"
+        type="submit"
+        mt={5}
+        color={"black"}
+        size="xl"
+      >
+        削除する
+      </Button>
+    </Stack>
+  );
+};
