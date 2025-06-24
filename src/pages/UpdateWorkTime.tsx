@@ -2,22 +2,22 @@ import { getUser } from "@/lib/api/auth";
 import { getWorkTimes, updateWorkTime } from "@/lib/api/workTime";
 import { Layout } from "@/lib/utils/Layout";
 import { MainButton } from "@/lib/utils/MainButton";
-import type { RegistrationFormProps } from "@/types/registration_form";
+import type { RegistrationFormProps } from "@/types/registration-form";
 import { Box, Field, Flex, Input, Switch } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 
-export const UpdateWorkTimes = () => {
+export const UpdateWorkTime = () => {
   const [isCheckingLogin, setIsCheckingLogin] = useState(true);
 
   const [workDate, setWorkDate] = useState("");
   const [clockIn, setClockIn] = useState("08:30");
   const [clockOut, setClockOut] = useState("17:15");
-  const [breakDurationMinute, setBreakDurationMinute] = useState("01:00");
+  const [breakDuration, setBreakDuration] = useState("01:00");
   const [note, setNote] = useState("");
   const [isPaidHoliday, setIsPaidHoliday] = useState(false);
   const navigate = useNavigate();
-  const { workTimesId } = useParams();
+  const { workTimeId } = useParams();
 
   useEffect(() => {
     const checkLoginStatus = async () => {
@@ -43,7 +43,7 @@ export const UpdateWorkTimes = () => {
   useEffect(() => {
     const fetchWorkTimes = async () => {
       try {
-        const fetchWorkTimes = await getWorkTimes(workTimesId);
+        const fetchWorkTimes = await getWorkTimes(workTimeId);
         if (fetchWorkTimes && fetchWorkTimes.data) {
           console.log("fetchWorkTimes.dataの結果:", fetchWorkTimes.data);
           setWorkDate(fetchWorkTimes.data.workDate);
@@ -63,32 +63,29 @@ export const UpdateWorkTimes = () => {
       }
     };
     fetchWorkTimes();
-  }, [workTimesId]);
+  }, [workTimeId]);
 
   const updateWorkTimeEvent = async ({
     workDate,
     clockIn,
     clockOut,
-    breakDurationMinute,
+    breakDuration,
     note,
     isPaidHoliday,
   }: RegistrationFormProps) => {
     try {
-      console.log(clockIn);
-      console.log(clockOut);
-      console.log(breakDurationMinute);
-      const newWorkTime = await updateWorkTime(workTimesId, {
+      const newWorkTime = await updateWorkTime(workTimeId, {
         work_time: {
           work_date: workDate,
           clock_in: isPaidHoliday ? null : clockIn,
           clock_out: isPaidHoliday ? null : clockOut,
-          break_duration_minute: isPaidHoliday ? null : breakDurationMinute,
+          break_duration: isPaidHoliday ? null : breakDuration,
           note: note,
           is_paid_holiday: isPaidHoliday,
         },
       });
       console.log("修正後のworktimesデータは次の通り:", newWorkTime);
-      navigate(`/work_times/${workTimesId}`);
+      navigate(`/work_times/${workTimeId}`);
     } catch (e) {
       console.error("エラーが発生しました。", e);
     }
@@ -143,9 +140,9 @@ export const UpdateWorkTimes = () => {
             </Field.Label>
             <Input
               type="time"
-              value={breakDurationMinute}
+              value={breakDuration}
               step="60"
-              onChange={(e) => setBreakDurationMinute(e.target.value)}
+              onChange={(e) => setBreakDuration(e.target.value)}
               disabled={isPaidHoliday}
             />
           </Flex>
@@ -175,11 +172,11 @@ export const UpdateWorkTimes = () => {
             if (e.checked) {
               setClockIn("");
               setClockOut("");
-              setBreakDurationMinute("");
+              setBreakDuration("");
             } else {
               setClockIn("08:30");
               setClockOut("17:15");
-              setBreakDurationMinute("01:00");
+              setBreakDuration("01:00");
             }
           }}
         >
@@ -197,23 +194,15 @@ export const UpdateWorkTimes = () => {
             workDate,
             clockIn,
             clockOut,
-            breakDurationMinute,
+            breakDuration,
             note,
             isPaidHoliday,
           });
-          navigate(`/work_times/registration/${workTimesId}`);
+          navigate(`/work_times/registration/${workTimeId}`);
         }}
       >
         修正する
       </MainButton>
-
-      <Box>{workDate}</Box>
-      <Box>{clockIn}</Box>
-      <Box>{clockOut}</Box>
-      <Box>{breakDurationMinute}</Box>
-      <Box>{note}</Box>
-      <Box>{isPaidHoliday}</Box>
-
       <MainButton
         colorPalette={"gray"}
         color={"black"}
