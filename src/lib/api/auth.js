@@ -24,3 +24,19 @@ export const getUser = () => {
     },
   });
 };
+
+export const destroyUser = () => {
+  if (
+    !Cookies.get("_access_token") ||
+    !Cookies.get("_client") ||
+    !Cookies.get("_uid")
+  )
+    return;
+  return client.delete("/auth/sign_out", {
+    headers: {
+      "access-token": Cookies.get("_access_token"),
+      client: Cookies.get("_client"),
+      uid: Cookies.get("_uid"),
+    },
+  });
+};
