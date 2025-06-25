@@ -1,54 +1,23 @@
 import { getUser } from "@/lib/api/auth";
-import { createWorkTime } from "@/lib/api/workTime";
+import { getWorkTimes, updateWorkTime } from "@/lib/api/workTime";
 import { Layout } from "@/lib/utils/Layout";
 import { MainButton } from "@/lib/utils/MainButton";
 import type { RegistrationFormProps } from "@/types/registration-form";
 import { Box, Field, Flex, Input, Switch } from "@chakra-ui/react";
-import type { AxiosError } from "axios";
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 
-export const Registration = () => {
+export const UpdateWorkTime = () => {
   const [isCheckingLogin, setIsCheckingLogin] = useState(true);
-  const today = new Date();
-  const jstDate = new Date(today.getTime() + 9 * 60 * 60 * 1000);
-  const todayDate = jstDate.toISOString().split("T")[0];
-  const [workDate, setWorkDate] = useState(todayDate);
+
+  const [workDate, setWorkDate] = useState("");
   const [clockIn, setClockIn] = useState("08:30");
   const [clockOut, setClockOut] = useState("17:15");
   const [breakDuration, setBreakDuration] = useState("01:00");
   const [note, setNote] = useState("");
   const [isPaidHoliday, setIsPaidHoliday] = useState(false);
-  const [errorMessages, setErrorMessages] = useState<string[]>([]);
   const navigate = useNavigate();
-
-  const createWorkTimeEvent = async (event: RegistrationFormProps) => {
-    try {
-      await createWorkTime({
-        work_time: {
-          work_date: event.workDate,
-          clock_in: event.isPaidHoliday ? null : event.clockIn,
-          clock_out: event.isPaidHoliday ? null : event.clockOut,
-          break_duration: event.isPaidHoliday ? null : event.breakDuration,
-          note: event.note,
-          is_paid_holiday: event.isPaidHoliday,
-        },
-      });
-      navigate("/work_times");
-    } catch (e) {
-      const err = e as AxiosError;
-
-      if (
-        err.response?.data &&
-        typeof err.response.data === "object" &&
-        "errors" in err.response.data
-      ) {
-        setErrorMessages((err.response.data as { errors: string[] }).errors);
-      } else {
-        setErrorMessages(["予期しないエラーが発生しました。"]);
-      }
-    }
-  };
+  const { workTimeId } = useParams();
 
   useEffect(() => {
     const checkLoginStatus = async () => {
@@ -71,22 +40,68 @@ export const Registration = () => {
     checkLoginStatus();
   }, [navigate]);
 
+  useEffect(() => {
+    const fetchWorkTimes = async () => {
+      try {
+        const fetchWorkTimes = await getWorkTimes(workTimeId);
+        if (fetchWorkTimes && fetchWorkTimes.data) {
+          console.log("fetchWorkTimes.dataの結果:", fetchWorkTimes.data);
+          setWorkDate(fetchWorkTimes.data.workDate);
+          // setNote(fetchWorkTimes.data.note);
+          // setIsPaidHoliday(fetchWorkTimes.data.isPaidHoliday);
+          // setClockIn(fetchWorkTimes.data.clockIn);
+          // setClockOut(fetchWorkTimes.data.clockOut);
+          // setBreakDurationMinute(fetchWorkTimes.data.breakDurationMinute);
+          // if (fetchWorkTimes.data.isPaidHoliday === true) {
+          //   setClockIn("");
+          //   setClockOut("");
+          //   setBreakDurationMinute("");
+          // }
+        }
+      } catch (e) {
+        console.error("エラーが発生しました:", e);
+      }
+    };
+    fetchWorkTimes();
+  }, [workTimeId]);
+
+  const updateWorkTimeEvent = async ({
+    workDate,
+    clockIn,
+    clockOut,
+    breakDuration,
+    note,
+    isPaidHoliday,
+  }: RegistrationFormProps) => {
+    try {
+      const newWorkTime = await updateWorkTime(workTimeId, {
+        work_time: {
+          work_date: workDate,
+          clock_in: isPaidHoliday ? null : clockIn,
+          clock_out: isPaidHoliday ? null : clockOut,
+          break_duration: isPaidHoliday ? null : breakDuration,
+          note: note,
+          is_paid_holiday: isPaidHoliday,
+        },
+      });
+      console.log("修正後のworktimesデータは次の通り:", newWorkTime);
+      navigate(`/work_times/${workTimeId}`);
+    } catch (e) {
+      console.error("エラーが発生しました。", e);
+    }
+  };
+
   if (isCheckingLogin) return null;
 
   return (
-    <Layout title="出勤登録">
+    <Layout title="出勤登録(修正)">
       <Field.Root>
         <Box width="100%">
           <Flex align="center" gap={4}>
             <Field.Label whiteSpace="nowrap" minWidth="80px">
               日付
             </Field.Label>
-            <Input
-              type="date"
-              value={workDate}
-              width="100%"
-              onChange={(e) => setWorkDate(e.target.value)}
-            />
+            <Box>{workDate}</Box>
           </Flex>
         </Box>
 
@@ -175,7 +190,7 @@ export const Registration = () => {
         colorPalette={"blue"}
         color={"black"}
         onClick={() => {
-          createWorkTimeEvent({
+          updateWorkTimeEvent({
             workDate,
             clockIn,
             clockOut,
@@ -183,21 +198,17 @@ export const Registration = () => {
             note,
             isPaidHoliday,
           });
+          navigate(`/work_times/registration/${workTimeId}`);
         }}
       >
-        登録する
+        修正する
       </MainButton>
-
-      {errorMessages.length > 0 && (
-        <Box color="red">
-          {errorMessages.map((msg, idx) => (
-            <Box key={idx}>{msg}</Box>
-          ))}
-        </Box>
-      )}
-
-      <MainButton onClick={() => navigate("/work_times")}>
-        勤務状況を確認する
+      <MainButton
+        colorPalette={"gray"}
+        color={"black"}
+        onClick={() => navigate("/work_times")}
+      >
+        勤務状況一覧に戻る
       </MainButton>
     </Layout>
   );
