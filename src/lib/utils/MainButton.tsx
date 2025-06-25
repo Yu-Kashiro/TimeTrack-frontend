@@ -1,14 +1,20 @@
 import { Button } from "@chakra-ui/react/button";
-import type { ReactNode } from "react";
 
 type MainButtonProps = {
-  colorPalette: string;
-  color: string;
-  onClick: () => void;
-  children: ReactNode
-}
+  colorPalette?: string;
+  color?: string;
+  children: React.ReactNode;
+  onClick?: () => void;
+  disabled?: boolean;
+};
 
-export const MainButton = ({colorPalette, color, onClick,  children }: MainButtonProps) => {
+export const MainButton = ({
+  colorPalette,
+  color,
+  children,
+  onClick,
+  disabled = false,
+}: MainButtonProps) => {
   return (
     <Button
       colorPalette={colorPalette}
@@ -18,6 +24,7 @@ export const MainButton = ({colorPalette, color, onClick,  children }: MainButto
       mt={5}
       color={color}
       onClick={onClick}
+      disabled={disabled}
     >
       {children}
     </Button>
