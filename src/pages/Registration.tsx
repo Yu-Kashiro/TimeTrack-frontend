@@ -1,47 +1,80 @@
+import { getUser } from "@/lib/api/auth";
 import { createWorkTime } from "@/lib/api/workTime";
-import {
-  Box,
-  Button,
-  Field,
-  Flex,
-  Heading,
-  Input,
-  Stack,
-  Switch,
-} from "@chakra-ui/react";
-import { useState } from "react";
+import { Layout } from "@/lib/utils/Layout";
+import { MainButton } from "@/lib/utils/MainButton";
+import type { RegistrationFormProps } from "@/types/registration-form";
+import { Box, Field, Flex, Input, Switch } from "@chakra-ui/react";
+import type { AxiosError } from "axios";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 export const Registration = () => {
-  const todayDate = new Date().toISOString().split("T")[0];
+  const [isCheckingLogin, setIsCheckingLogin] = useState(true);
+  const today = new Date();
+  const jstDate = new Date(today.getTime() + 9 * 60 * 60 * 1000);
+  const todayDate = jstDate.toISOString().split("T")[0];
   const [workDate, setWorkDate] = useState(todayDate);
   const [clockIn, setClockIn] = useState("08:30");
   const [clockOut, setClockOut] = useState("17:15");
-  const [breakDurationMinute, setBreakDurationMinute] = useState("01:00");
+  const [breakDuration, setBreakDuration] = useState("01:00");
   const [note, setNote] = useState("");
-  const [isPaidVacation, setIsPaidVacation] = useState(false);
+  const [isPaidHoliday, setIsPaidHoliday] = useState(false);
+  const [errorMessages, setErrorMessages] = useState<string[]>([]);
   const navigate = useNavigate();
 
-  const createWorkTimeEvent = async (event) => {
-    console.log(event)
-    console.log("createWorkTimeEventの実行")
-    await createWorkTime({
-      workDate: event.workDate,
-      clockIn: event.clockIn,
-      clockOut: event.clockOut,
-      breakDurationMinute: event.breakDurationMinute,
-      note: event.note,
-    });
+  const createWorkTimeEvent = async (event: RegistrationFormProps) => {
+    try {
+      await createWorkTime({
+        work_time: {
+          work_date: event.workDate,
+          clock_in: event.isPaidHoliday ? null : event.clockIn,
+          clock_out: event.isPaidHoliday ? null : event.clockOut,
+          break_duration: event.isPaidHoliday ? null : event.breakDuration,
+          note: event.note,
+          is_paid_holiday: event.isPaidHoliday,
+        },
+      });
+      navigate("/work_times");
+    } catch (e) {
+      const err = e as AxiosError;
+
+      if (
+        err.response?.data &&
+        typeof err.response.data === "object" &&
+        "errors" in err.response.data
+      ) {
+        setErrorMessages((err.response.data as { errors: string[] }).errors);
+      } else {
+        setErrorMessages(["予期しないエラーが発生しました。"]);
+      }
+    }
   };
 
+  useEffect(() => {
+    const checkLoginStatus = async () => {
+      try {
+        const checkLoginStatus = await getUser();
+        console.log("ログインチェック結果:", checkLoginStatus);
+        if (
+          !checkLoginStatus ||
+          !checkLoginStatus.data ||
+          checkLoginStatus.data.isLogin === false
+        ) {
+          navigate("/signin");
+          return;
+        }
+        setIsCheckingLogin(false);
+      } catch (e) {
+        console.error("エラーが発生しました:", e);
+      }
+    };
+    checkLoginStatus();
+  }, [navigate]);
 
-
+  if (isCheckingLogin) return null;
 
   return (
-    <Stack>
-      <Heading size="2xl" mb={5}>
-        出勤登録
-      </Heading>
+    <Layout title="出勤登録">
       <Field.Root>
         <Box width="100%">
           <Flex align="center" gap={4}>
@@ -66,7 +99,7 @@ export const Registration = () => {
               type="time"
               value={clockIn}
               onChange={(e) => setClockIn(e.target.value)}
-              disabled={isPaidVacation}
+              disabled={isPaidHoliday}
             />
           </Flex>
         </Box>
@@ -80,7 +113,7 @@ export const Registration = () => {
               type="time"
               value={clockOut}
               onChange={(e) => setClockOut(e.target.value)}
-              disabled={isPaidVacation}
+              disabled={isPaidHoliday}
             />
           </Flex>
         </Box>
@@ -92,10 +125,10 @@ export const Registration = () => {
             </Field.Label>
             <Input
               type="time"
-              value={breakDurationMinute}
+              value={breakDuration}
               step="60"
-              onChange={(e) => setBreakDurationMinute(e.target.value)}
-              disabled={isPaidVacation}
+              onChange={(e) => setBreakDuration(e.target.value)}
+              disabled={isPaidHoliday}
             />
           </Flex>
         </Box>
@@ -118,17 +151,17 @@ export const Registration = () => {
       <Flex justify="flex-end" mt={3}>
         <Switch.Root
           colorPalette="blue"
-          checked={isPaidVacation}
+          checked={isPaidHoliday}
           onCheckedChange={(e) => {
-            setIsPaidVacation(e.checked);
+            setIsPaidHoliday(e.checked);
             if (e.checked) {
               setClockIn("");
               setClockOut("");
-              setBreakDurationMinute("");
+              setBreakDuration("");
             } else {
               setClockIn("08:30");
               setClockOut("17:15");
-              setBreakDurationMinute("01:00");
+              setBreakDuration("01:00");
             }
           }}
         >
@@ -138,30 +171,34 @@ export const Registration = () => {
         </Switch.Root>
       </Flex>
 
-      <Button
+      <MainButton
         colorPalette={"blue"}
-        variant="subtle"
+        color={"black"}
         onClick={() => {
           createWorkTimeEvent({
             workDate,
             clockIn,
             clockOut,
-            breakDurationMinute,
+            breakDuration,
             note,
-            isPaidVacation,
+            isPaidHoliday,
           });
-          navigate("/work_times/index");
         }}
-        mt={5}
-        color={"black"}
-        size="xl"
       >
         登録する
-      </Button>
+      </MainButton>
 
-      <Button variant="subtle" type="submit" mt={5} color={"black"} size="xl">
-        出勤状況を確認する
-      </Button>
-    </Stack>
+      {errorMessages.length > 0 && (
+        <Box color="red">
+          {errorMessages.map((msg, idx) => (
+            <Box key={idx}>{msg}</Box>
+          ))}
+        </Box>
+      )}
+
+      <MainButton onClick={() => navigate("/work_times")}>
+        勤務状況を確認する
+      </MainButton>
+    </Layout>
   );
 };
