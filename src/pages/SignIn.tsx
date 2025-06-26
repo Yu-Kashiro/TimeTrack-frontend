@@ -47,11 +47,11 @@ export const SignIn = () => {
 
         <ErrorMessage errorMessage={errorMessage} />
 
-        <Box>
+        <Box textAlign="center">
           <Link to="../signup">ユーザー登録はこちら</Link>
         </Box>
 
-        <Box>
+        <Box textAlign="center">
           <Link to="">パスワードを再設定</Link>
         </Box>
       </Layout>
