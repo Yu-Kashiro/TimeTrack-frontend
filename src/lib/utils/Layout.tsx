@@ -10,7 +10,7 @@ type LayoutProps = {
 export const Layout = ({ title,children }: LayoutProps) => {
   return (
     <Stack gap="4" justify="center">
-      <Heading size="2xl" mb={5}>
+      <Heading size="2xl" mb={5} textAlign="center">
         {title}
       </Heading>
         {children}
