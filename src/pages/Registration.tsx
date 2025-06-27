@@ -3,7 +3,14 @@ import { createWorkTime } from "@/lib/api/workTime";
 import { Layout } from "@/lib/utils/Layout";
 import { MainButton } from "@/lib/utils/MainButton";
 import type { RegistrationFormProps } from "@/types/registration-form";
-import { Box, Field, Flex, Input, Switch } from "@chakra-ui/react";
+import {
+  Box,
+  Field,
+  Flex,
+  Input,
+  NativeSelect,
+  Switch,
+} from "@chakra-ui/react";
 import type { AxiosError } from "axios";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -16,11 +23,22 @@ export const Registration = () => {
   const [workDate, setWorkDate] = useState(todayDate);
   const [clockIn, setClockIn] = useState("08:30");
   const [clockOut, setClockOut] = useState("17:15");
-  const [breakDuration, setBreakDuration] = useState("01:00");
+  // const [breakDuration, setBreakDuration] = useState("01:00");
+  const [breakDurationHours, setBreakDurationHours] = useState("01");
+  const [breakDurationMinutes, setBreakDurationMinutes] = useState("00");
   const [note, setNote] = useState("");
   const [isPaidHoliday, setIsPaidHoliday] = useState(false);
   const [errorMessages, setErrorMessages] = useState<string[]>([]);
   const navigate = useNavigate();
+
+  const getBreakDuration = () => {
+  // 有給の場合はnull、それ以外は "hh:mm" 形式で返す
+  if (isPaidHoliday) return null;
+  // どちらかが空の場合は "00:00" 扱い
+  const hours = breakDurationHours || "00";
+  const minutes = breakDurationMinutes || "00";
+  return `${hours}:${minutes}`;
+};
 
   const createWorkTimeEvent = async (event: RegistrationFormProps) => {
     try {
@@ -123,13 +141,27 @@ export const Registration = () => {
             <Field.Label whiteSpace="nowrap" minWidth="80px">
               休憩時間
             </Field.Label>
-            <Input
-              type="time"
-              value={breakDuration}
-              step="60"
-              onChange={(e) => setBreakDuration(e.target.value)}
-              disabled={isPaidHoliday}
-            />
+            <NativeSelect.Root disabled={isPaidHoliday}>
+              <NativeSelect.Field
+                value={breakDurationHours}
+                onChange={(e) => setBreakDurationHours(e.target.value)}
+              >
+                <option value="00">0時間</option>
+                <option value="01">1時間</option>
+                <option value="02">2時間</option>
+                <option value="03">3時間</option>
+              </NativeSelect.Field>
+              <NativeSelect.Field
+                value={breakDurationMinutes}
+                onChange={(e) => setBreakDurationMinutes(e.target.value)}
+              >
+                <option value="00">0分</option>
+                <option value="15">15分</option>
+                <option value="30">30分</option>
+                <option value="45">45分</option>
+              </NativeSelect.Field>
+              <NativeSelect.Indicator />
+            </NativeSelect.Root>
           </Flex>
         </Box>
 
@@ -157,11 +189,13 @@ export const Registration = () => {
             if (e.checked) {
               setClockIn("");
               setClockOut("");
-              setBreakDuration("");
+              setBreakDurationHours("");
+              setBreakDurationMinutes("");
             } else {
               setClockIn("08:30");
               setClockOut("17:15");
-              setBreakDuration("01:00");
+              setBreakDurationHours("01");
+              setBreakDurationMinutes("00");
             }
           }}
         >
@@ -179,7 +213,7 @@ export const Registration = () => {
             workDate,
             clockIn,
             clockOut,
-            breakDuration,
+            breakDuration: getBreakDuration(),
             note,
             isPaidHoliday,
           });
@@ -189,7 +223,7 @@ export const Registration = () => {
       </MainButton>
 
       {errorMessages.length > 0 && (
-        <Box color="red">
+        <Box color="red" textAlign={"center"}>
           {errorMessages.map((msg, idx) => (
             <Box key={idx}>{msg}</Box>
           ))}

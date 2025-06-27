@@ -62,9 +62,16 @@ export const WorkTimeDetail = () => {
 
   const formatTime = (isoString: string) => {
     const date = new Date(isoString);
-    const hours = date.getHours().toString();
-    const minutes = date.getMinutes().toString().padStart(2, "0");
-    return `${hours}時${minutes}分`;
+    return (
+      date
+        .toLocaleTimeString("ja-JP", {
+          hour: "2-digit",
+          minute: "2-digit",
+          hour12: false,
+          timeZone: "Asia/Tokyo", // 明示的にJSTで表示
+        })
+        .replace(":", "時") + "分"
+    );
   };
 
   return (
@@ -79,11 +86,15 @@ export const WorkTimeDetail = () => {
         <Table.Body>
           <Table.Row>
             <Table.Cell>始業時間</Table.Cell>
-            <Table.Cell>{formatTime(workTimesItem.clockIn)}</Table.Cell>
+            <Table.Cell>
+              {workTimesItem.clockIn ? formatTime(workTimesItem.clockIn) : ""}
+            </Table.Cell>
           </Table.Row>
           <Table.Row>
             <Table.Cell>終業時間</Table.Cell>
-            <Table.Cell>{formatTime(workTimesItem.clockOut)}</Table.Cell>
+            <Table.Cell>
+              {workTimesItem.clockOut ? formatTime(workTimesItem.clockOut) : ""}
+            </Table.Cell>
           </Table.Row>
         </Table.Body>
         <Table.Body>
@@ -135,7 +146,7 @@ export const WorkTimeDetail = () => {
 
       <DeleteButton onClick={() => destroyWorkTime()} />
 
-      <Box>
+      <Box textAlign="center">
         <Link to="/work_times">勤務一覧に戻る</Link>
       </Box>
     </Layout>
