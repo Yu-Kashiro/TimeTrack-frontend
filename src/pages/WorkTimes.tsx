@@ -46,7 +46,7 @@ export const WorkTimes = () => {
       monthsSet.add(monthStr);
     });
 
-    return Array.from(monthsSet).sort().reverse();
+    return Array.from(monthsSet).sort();
   }, [workTimesItems]);
 
   useEffect(() => {
@@ -115,9 +115,9 @@ export const WorkTimes = () => {
           value={selectedMonth}
           onChange={(e) => setSelectedMonth(e.target.value)}
           style={{
-            border: "1px solid #000", // 枠線の色と太さ
-            borderRadius: "4px", // 角を丸くする
-            padding: "8px", // 内側の余白
+            border: "1px solid #000",
+            borderRadius: "4px",
+            padding: "8px",
           }}
         >
           {uniqueMonths.map((month) => {
