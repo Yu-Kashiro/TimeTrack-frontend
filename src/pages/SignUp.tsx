@@ -53,7 +53,7 @@ export const SignUp = () => {
 
         <ErrorMessage errorMessage={errorMessage} />
 
-        <Box>
+        <Box textAlign="center">
           <Link to="../signin">ログインはこちら</Link>
         </Box>
       </Layout>
