@@ -3,7 +3,14 @@ import { getWorkTimes, updateWorkTime } from "@/lib/api/workTime";
 import { Layout } from "@/lib/utils/Layout";
 import { MainButton } from "@/lib/utils/MainButton";
 import type { RegistrationFormProps } from "@/types/registration-form";
-import { Box, Field, Flex, Input, Switch } from "@chakra-ui/react";
+import {
+  Box,
+  Field,
+  Flex,
+  Input,
+  NativeSelect,
+  Switch,
+} from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 
@@ -13,11 +20,21 @@ export const UpdateWorkTime = () => {
   const [workDate, setWorkDate] = useState("");
   const [clockIn, setClockIn] = useState("08:30");
   const [clockOut, setClockOut] = useState("17:15");
-  const [breakDuration, setBreakDuration] = useState("01:00");
+  const [breakDurationHours, setBreakDurationHours] = useState("01");
+  const [breakDurationMinutes, setBreakDurationMinutes] = useState("00");
   const [note, setNote] = useState("");
   const [isPaidHoliday, setIsPaidHoliday] = useState(false);
   const navigate = useNavigate();
   const { workTimeId } = useParams();
+
+  const getBreakDuration = () => {
+    // 有給の場合はnull、それ以外は "hh:mm" 形式で返す
+    if (isPaidHoliday) return null;
+    // どちらかが空の場合は "00:00" 扱い
+    const hours = breakDurationHours || "00";
+    const minutes = breakDurationMinutes || "00";
+    return `${hours}:${minutes}`;
+  };
 
   useEffect(() => {
     const checkLoginStatus = async () => {
@@ -41,27 +58,42 @@ export const UpdateWorkTime = () => {
   }, [navigate]);
 
   useEffect(() => {
+    const extractTime = (isoString: string | null): string => {
+      if (!isoString) return "";
+      const date = new Date(isoString);
+      const hours = String(date.getHours()).padStart(2, "0");
+      const minutes = String(date.getMinutes()).padStart(2, "0");
+      return `${hours}:${minutes}`;
+    };
+
     const fetchWorkTimes = async () => {
       try {
         const fetchWorkTimes = await getWorkTimes(workTimeId);
         if (fetchWorkTimes && fetchWorkTimes.data) {
           console.log("fetchWorkTimes.dataの結果:", fetchWorkTimes.data);
           setWorkDate(fetchWorkTimes.data.workDate);
-          // setNote(fetchWorkTimes.data.note);
-          // setIsPaidHoliday(fetchWorkTimes.data.isPaidHoliday);
-          // setClockIn(fetchWorkTimes.data.clockIn);
-          // setClockOut(fetchWorkTimes.data.clockOut);
-          // setBreakDurationMinute(fetchWorkTimes.data.breakDurationMinute);
-          // if (fetchWorkTimes.data.isPaidHoliday === true) {
-          //   setClockIn("");
-          //   setClockOut("");
-          //   setBreakDurationMinute("");
-          // }
+          setNote(fetchWorkTimes.data.note || "");
+          setIsPaidHoliday(fetchWorkTimes.data.isPaidHoliday || false);
+
+          if (fetchWorkTimes.data.isPaidHoliday) {
+            setClockIn("");
+            setClockOut("");
+            setBreakDurationHours("");
+            setBreakDurationMinutes("");
+          } else {
+            setClockIn(extractTime(fetchWorkTimes.data.clockIn));
+            setClockOut(extractTime(fetchWorkTimes.data.clockOut));
+            const breakDuration = fetchWorkTimes.data.breakDuration || "01:00";
+            const [hours, minutes] = breakDuration.split(":");
+            setBreakDurationHours(hours || "01");
+            setBreakDurationMinutes(minutes || "00");
+          }
         }
       } catch (e) {
         console.error("エラーが発生しました:", e);
       }
     };
+
     fetchWorkTimes();
   }, [workTimeId]);
 
@@ -91,6 +123,11 @@ export const UpdateWorkTime = () => {
     }
   };
 
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString);
+    return `${date.getFullYear()}年${date.getMonth() + 1}月${date.getDate()}日`;
+  };
+
   if (isCheckingLogin) return null;
 
   return (
@@ -101,7 +138,7 @@ export const UpdateWorkTime = () => {
             <Field.Label whiteSpace="nowrap" minWidth="80px">
               日付
             </Field.Label>
-            <Box>{workDate}</Box>
+            <Box>{formatDate(workDate)}</Box>
           </Flex>
         </Box>
 
@@ -138,13 +175,27 @@ export const UpdateWorkTime = () => {
             <Field.Label whiteSpace="nowrap" minWidth="80px">
               休憩時間
             </Field.Label>
-            <Input
-              type="time"
-              value={breakDuration}
-              step="60"
-              onChange={(e) => setBreakDuration(e.target.value)}
-              disabled={isPaidHoliday}
-            />
+            <NativeSelect.Root disabled={isPaidHoliday}>
+              <NativeSelect.Field
+                value={breakDurationHours}
+                onChange={(e) => setBreakDurationHours(e.target.value)}
+              >
+                <option value="00">0時間</option>
+                <option value="01">1時間</option>
+                <option value="02">2時間</option>
+                <option value="03">3時間</option>
+              </NativeSelect.Field>
+              <NativeSelect.Field
+                value={breakDurationMinutes}
+                onChange={(e) => setBreakDurationMinutes(e.target.value)}
+              >
+                <option value="00">0分</option>
+                <option value="15">15分</option>
+                <option value="30">30分</option>
+                <option value="45">45分</option>
+              </NativeSelect.Field>
+              <NativeSelect.Indicator />
+            </NativeSelect.Root>
           </Flex>
         </Box>
 
@@ -172,11 +223,13 @@ export const UpdateWorkTime = () => {
             if (e.checked) {
               setClockIn("");
               setClockOut("");
-              setBreakDuration("");
+              setBreakDurationHours("");
+              setBreakDurationMinutes("");
             } else {
               setClockIn("08:30");
               setClockOut("17:15");
-              setBreakDuration("01:00");
+              setBreakDurationHours("01");
+              setBreakDurationMinutes("00");
             }
           }}
         >
@@ -194,7 +247,7 @@ export const UpdateWorkTime = () => {
             workDate,
             clockIn,
             clockOut,
-            breakDuration,
+            breakDuration: getBreakDuration(),
             note,
             isPaidHoliday,
           });
