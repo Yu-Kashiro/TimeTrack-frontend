@@ -32,7 +32,7 @@ export const DeleteButton = ({ onClick }: DeleteButtonProps) => {
             </Dialog.Body>
             <Dialog.Footer>
               <Dialog.ActionTrigger asChild>
-                <Button variant="outline">キャンセル</Button>
+                <Button variant="outline" color="black">キャンセル</Button>
               </Dialog.ActionTrigger>
               <Button colorPalette="red" onClick={onClick}>
                 削除する
