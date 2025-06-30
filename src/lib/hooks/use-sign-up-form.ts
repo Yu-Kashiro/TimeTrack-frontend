@@ -6,7 +6,6 @@ import { signUp } from "../api/auth";
 import Cookies from "js-cookie";
 
 export const useSignUpForm = () => {
-
   const navigate = useNavigate();
   const [errorMessage, setErrorMessage] = useState("");
 
@@ -19,9 +18,13 @@ export const useSignUpForm = () => {
   const onSubmit = handleSubmit(async (data) => {
     try {
       const res = await signUp(data);
-      Cookies.set("_access_token", res.headers["access-token"]);
-      Cookies.set("_client", res.headers["client"]);
-      Cookies.set("_uid", res.headers["uid"]);
+      const cookieOptions = {
+        secure: true,
+        sameSite: "strict" as const,
+      };
+      Cookies.set("_access_token", res.headers["access-token"], cookieOptions);
+      Cookies.set("_client", res.headers["client"], cookieOptions);
+      Cookies.set("_uid", res.headers["uid"], cookieOptions);
       navigate("/work_times/registration");
     } catch (e) {
       console.log(e);
@@ -31,6 +34,5 @@ export const useSignUpForm = () => {
     }
   });
 
-  return{ errorMessage, register, errors, isValid, onSubmit };
-
+  return { errorMessage, register, errors, isValid, onSubmit };
 };

@@ -72,7 +72,6 @@ export const Registration = () => {
     const checkLoginStatus = async () => {
       try {
         const checkLoginStatus = await getUser();
-        console.log("ログインチェック結果:", checkLoginStatus);
         if (
           !checkLoginStatus ||
           !checkLoginStatus.data ||

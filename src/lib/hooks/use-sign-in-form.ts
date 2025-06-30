@@ -19,12 +19,18 @@ export const useSignInForm = () => {
   const onSubmit = handleSubmit(async (data) => {
     try {
       const res = await signIn(data);
-      Cookies.set("_access_token", res.headers["access-token"]);
-      Cookies.set("_client", res.headers["client"]);
-      Cookies.set("_uid", res.headers["uid"]);
+
+      const cookieOptions = {
+        secure: true,
+        sameSite: 'strict' as const,
+      };
+
+      Cookies.set("_access_token", res.headers["access-token"], cookieOptions);
+      Cookies.set("_client", res.headers["client"], cookieOptions);
+      Cookies.set("_uid", res.headers["uid"], cookieOptions);
       navigate("/work_times/registration");
     } catch (e) {
-      console.log(e);
+        console.log(e);
       setErrorMessage(
         "ログインに失敗しました。メールアドレスとパスワードを確認してください。"
       );
