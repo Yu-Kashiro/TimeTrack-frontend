@@ -104,7 +104,7 @@ export const UpdateWorkTime = () => {
     isPaidHoliday,
   }: RegistrationFormProps) => {
     try {
-      const newWorkTime = await updateWorkTime(workTimeId, {
+      await updateWorkTime(workTimeId, {
         work_time: {
           work_date: workDate,
           clock_in: isPaidHoliday ? null : clockIn,
