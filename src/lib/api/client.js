@@ -16,9 +16,14 @@ client.interceptors.response.use(
     const newClient = response.headers["client"];
     const newUid = response.headers["uid"];
 
-    if (newToken) Cookies.set("_access_token", newToken);
-    if (newClient) Cookies.set("_client", newClient);
-    if (newUid) Cookies.set("_uid", newUid);
+    const cookieOptions = {
+      secure: true,
+      sameSite: 'strict',
+      httpOnly: false,
+    };
+    if (newToken) Cookies.set("_access_token", newToken, cookieOptions);
+    if (newClient) Cookies.set("_client", newClient, cookieOptions);
+    if (newUid) Cookies.set("_uid", newUid, cookieOptions);
 
     return response;
   },
