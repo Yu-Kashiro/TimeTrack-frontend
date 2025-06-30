@@ -40,7 +40,6 @@ export const UpdateWorkTime = () => {
     const checkLoginStatus = async () => {
       try {
         const checkLoginStatus = await getUser();
-        console.log("ログインチェック結果:", checkLoginStatus);
         if (
           !checkLoginStatus ||
           !checkLoginStatus.data ||
@@ -70,7 +69,6 @@ export const UpdateWorkTime = () => {
       try {
         const fetchWorkTimes = await getWorkTimes(workTimeId);
         if (fetchWorkTimes && fetchWorkTimes.data) {
-          console.log("fetchWorkTimes.dataの結果:", fetchWorkTimes.data);
           setWorkDate(fetchWorkTimes.data.workDate);
           setNote(fetchWorkTimes.data.note || "");
           setIsPaidHoliday(fetchWorkTimes.data.isPaidHoliday || false);
@@ -116,7 +114,6 @@ export const UpdateWorkTime = () => {
           is_paid_holiday: isPaidHoliday,
         },
       });
-      console.log("修正後のworktimesデータは次の通り:", newWorkTime);
       navigate(`/work_times/${workTimeId}`);
     } catch (e) {
       console.error("エラーが発生しました。", e);

@@ -101,7 +101,6 @@ export const WorkTimes = () => {
   const handleLogout = async () => {
     try {
       await destroyUser();
-      console.log("ログアウトし、画面を遷移します。");
       navigate("/signin");
     } catch (e) {
       console.log("ログアウトできません。", e);
@@ -135,7 +134,7 @@ export const WorkTimes = () => {
             <Table.Row>
               <Table.ColumnHeader textAlign="center">日付</Table.ColumnHeader>
               <Table.ColumnHeader textAlign="center">
-                出勤時間
+                勤務時間
               </Table.ColumnHeader>
               <Table.ColumnHeader textAlign="center">
                 休憩時間

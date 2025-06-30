@@ -41,8 +41,6 @@ export const WorkTimeDetail = () => {
         const fetchWorkTimes = await getWorkTimes(workTimeId);
         if (fetchWorkTimes && fetchWorkTimes.data) {
           setWorkTimesItem(fetchWorkTimes.data);
-          console.log("fetchWorkTimes.dataの結果を以下に表示");
-          console.log(fetchWorkTimes.data);
         }
         setIsCheckingLogin(false);
       } catch (e) {
