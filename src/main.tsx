@@ -2,9 +2,9 @@ import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import "./index.css";
 import { App } from "./App.tsx";
-import { Provider } from "./components/ui/provider.tsx";
+import { Provider } from "./lib/components/defaultChakraUIComponents/provider.tsx";
 import { BrowserRouter } from "react-router-dom";
-import { LightMode } from "./components/ui/color-mode.tsx";
+import { LightMode } from "./lib/components/defaultChakraUIComponents/color-mode.tsx";
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
