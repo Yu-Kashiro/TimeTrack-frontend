@@ -12,7 +12,6 @@ export const DeleteButton = ({ onClick }: DeleteButtonProps) => {
           colorPalette="red"
           variant="subtle"
           size="xl"
-          mt={5}
           color="black"
         >
           削除する
