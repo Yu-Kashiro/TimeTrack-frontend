@@ -1,7 +1,7 @@
 import applyCaseMiddleware from "axios-case-converter";
 import axios from "axios";
-
 import Cookies from "js-cookie";
+import { secureCookieOptions } from "../utils/secureCookieOptions";
 
 export const client = applyCaseMiddleware(
   axios.create({
@@ -16,14 +16,9 @@ client.interceptors.response.use(
     const newClient = response.headers["client"];
     const newUid = response.headers["uid"];
 
-    const cookieOptions = {
-      secure: true,
-      sameSite: 'strict',
-      httpOnly: false,
-    };
-    if (newToken) Cookies.set("_access_token", newToken, cookieOptions);
-    if (newClient) Cookies.set("_client", newClient, cookieOptions);
-    if (newUid) Cookies.set("_uid", newUid, cookieOptions);
+    if (newToken) Cookies.set("_access_token", newToken, secureCookieOptions);
+    if (newClient) Cookies.set("_client", newClient, secureCookieOptions);
+    if (newUid) Cookies.set("_uid", newUid, secureCookieOptions);
 
     return response;
   },
