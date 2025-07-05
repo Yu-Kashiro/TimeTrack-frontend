@@ -3,14 +3,14 @@ import { useNavigate } from "react-router-dom";
 import { getUser } from "../api/auth";
 
 type UseLoginCheckOptions = {
-  redirectIf?: "loggedIn" | "notLoggedIn";
-  redirectTo?: string;
-  onSuccess?: () => void;
+  redirectIf: "loggedIn" | "notLoggedIn";
+  redirectTo: string;
+  onSuccess: () => void;
 };
 
 export const useLoginCheck = ({
-  redirectIf = "notLoggedIn",
-  redirectTo = "/signin",
+  redirectIf,
+  redirectTo,
   onSuccess,
 }: UseLoginCheckOptions) => {
   const navigate = useNavigate();
@@ -20,14 +20,13 @@ export const useLoginCheck = ({
       try {
         const res = await getUser();
         const isLogin = res?.data?.isLogin;
-
         if (
           (redirectIf === "notLoggedIn" && !isLogin) ||
           (redirectIf === "loggedIn" && isLogin)
         ) {
           navigate(redirectTo);
         } else {
-          onSuccess?.();
+          onSuccess();
         }
       } catch (e) {
         console.error("ログイン確認エラー:", e);

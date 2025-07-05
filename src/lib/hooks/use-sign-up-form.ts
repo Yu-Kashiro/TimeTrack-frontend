@@ -1,9 +1,10 @@
-import type { SignUpFormValues } from "@/types/auth-forms";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 import { signUp } from "../api/auth";
 import Cookies from "js-cookie";
+import { secureCookieOptions } from "../utils/secureCookieOptions";
+import type { SignUpFormValues } from "@/types/signUpFormValues";
 
 export const useSignUpForm = () => {
   const navigate = useNavigate();
@@ -18,13 +19,9 @@ export const useSignUpForm = () => {
   const onSubmit = handleSubmit(async (data) => {
     try {
       const res = await signUp(data);
-      const cookieOptions = {
-        secure: true,
-        sameSite: "strict" as const,
-      };
-      Cookies.set("_access_token", res.headers["access-token"], cookieOptions);
-      Cookies.set("_client", res.headers["client"], cookieOptions);
-      Cookies.set("_uid", res.headers["uid"], cookieOptions);
+      Cookies.set("_access_token", res.headers["access-token"], secureCookieOptions);
+      Cookies.set("_client", res.headers["client"], secureCookieOptions);
+      Cookies.set("_uid", res.headers["uid"], secureCookieOptions);
       navigate("/work_times/registration");
     } catch (e) {
       console.log(e);
