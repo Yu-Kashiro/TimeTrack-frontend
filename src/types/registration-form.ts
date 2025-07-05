@@ -3,6 +3,6 @@ export type RegistrationFormProps = {
   clockIn: string;
   clockOut: string;
   breakDuration: string | null;
-  note: string;
+  note: string | null;
   isPaidHoliday: boolean;
 };
