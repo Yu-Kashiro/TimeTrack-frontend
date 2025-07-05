@@ -1,7 +1,11 @@
-import { getUser } from "@/lib/api/auth";
-import { getWorkTimes, updateWorkTime } from "@/lib/api/workTime";
-import { Layout } from "@/lib/utils/Layout";
-import { MainButton } from "@/lib/utils/MainButton";
+import { getWorkTimes, updateWorkTime } from "@/lib/api/workTimes";
+import { Layout } from "@/lib/components/Layout";
+import { MainButton } from "@/lib/components/MainButton";
+import { useLoginCheck } from "@/lib/hooks/use-login-check";
+import { getBreakDuration } from "@/lib/utils/getBreakDuration";
+import { isoStringToHourAndMinutes } from "@/lib/utils/isoStringToHourAndMinutes";
+import { minutesToHourPartAndMinutesPart } from "@/lib/utils/minutesToHourPartAndMinutesPart";
+import { toJapaneseYearMonthDay } from "@/lib/utils/toJapaneseYearMonthDay";
 import type { RegistrationFormProps } from "@/types/registration-form";
 import {
   Box,
@@ -18,73 +22,89 @@ export const UpdateWorkTime = () => {
   const [isCheckingLogin, setIsCheckingLogin] = useState(true);
 
   const [workDate, setWorkDate] = useState("");
-  const [clockIn, setClockIn] = useState("08:30");
-  const [clockOut, setClockOut] = useState("17:15");
-  const [breakDurationHours, setBreakDurationHours] = useState("01");
-  const [breakDurationMinutes, setBreakDurationMinutes] = useState("00");
+  const [clockIn, setClockIn] = useState("");
+  const [clockOut, setClockOut] = useState("");
+  const [breakDurationHours, setBreakDurationHours] = useState("");
+  const [breakDurationMinutes, setBreakDurationMinutes] = useState("");
   const [note, setNote] = useState("");
   const [isPaidHoliday, setIsPaidHoliday] = useState(false);
+
+  const [beforeUpdateWorkTime, setBeforeUpdateWorkTime] = useState<{
+    clockIn: string;
+    clockOut: string;
+    breakDurationHours: string;
+    breakDurationMinutes: string;
+    isPaidHoliday: boolean;
+  } | null>(null);
+
   const navigate = useNavigate();
   const { workTimeId } = useParams();
 
-  const getBreakDuration = () => {
-    // 有給の場合はnull、それ以外は "hh:mm" 形式で返す
-    if (isPaidHoliday) return null;
-    // どちらかが空の場合は "00:00" 扱い
-    const hours = breakDurationHours || "00";
-    const minutes = breakDurationMinutes || "00";
-    return `${hours}:${minutes}`;
-  };
-
   useEffect(() => {
-    const checkLoginStatus = async () => {
+    const fetchBeforeUpdateWorkTime = async () => {
       try {
-        const checkLoginStatus = await getUser();
-        if (
-          !checkLoginStatus ||
-          !checkLoginStatus.data ||
-          checkLoginStatus.data.isLogin === false
-        ) {
-          navigate("/signin");
-          return;
-        }
-        setIsCheckingLogin(false);
-      } catch (e) {
-        console.error("エラーが発生しました:", e);
-      }
-    };
-    checkLoginStatus();
-  }, [navigate]);
+        if (!workTimeId) return;
 
-  useEffect(() => {
-    const extractTime = (isoString: string | null): string => {
-      if (!isoString) return "";
-      const date = new Date(isoString);
-      const hours = String(date.getHours()).padStart(2, "0");
-      const minutes = String(date.getMinutes()).padStart(2, "0");
-      return `${hours}:${minutes}`;
-    };
+        const response = await getWorkTimes(workTimeId);
+        if (response && response.data) {
+          const data = response.data;
 
-    const fetchWorkTimes = async () => {
-      try {
-        const fetchWorkTimes = await getWorkTimes(workTimeId);
-        if (fetchWorkTimes && fetchWorkTimes.data) {
-          setWorkDate(fetchWorkTimes.data.workDate);
-          setNote(fetchWorkTimes.data.note || "");
-          setIsPaidHoliday(fetchWorkTimes.data.isPaidHoliday || false);
+          // 基本情報の設定
+          setWorkDate(data.workDate);
+          setNote(data.note || "");
+          setIsPaidHoliday(data.isPaidHoliday || false);
 
-          if (fetchWorkTimes.data.isPaidHoliday) {
+          if (data.isPaidHoliday) {
+            // 有給休暇の場合は空にする
             setClockIn("");
             setClockOut("");
             setBreakDurationHours("");
             setBreakDurationMinutes("");
+            // 有給休暇でも元の値は保存しておく（復元用）
+            if (data.clockIn && data.clockOut) {
+              const originalClockIn = isoStringToHourAndMinutes(data.clockIn);
+              const originalClockOut = isoStringToHourAndMinutes(data.clockOut);
+              const breakDuration = data.breakDuration || "01:00";
+              const [hours, minutes] = breakDuration.split(":");
+              setBeforeUpdateWorkTime({
+                clockIn: originalClockIn,
+                clockOut: originalClockOut,
+                breakDurationHours: hours || "01",
+                breakDurationMinutes: minutes || "00",
+                isPaidHoliday: true,
+              });
+            } else {
+              // 有給休暇だが元の勤務時間データがない場合、デフォルト値を設定
+              setBeforeUpdateWorkTime({
+                clockIn: "08:30",
+                clockOut: "17:15",
+                breakDurationHours: "01",
+                breakDurationMinutes: "00",
+                isPaidHoliday: true,
+              });
+            }
           } else {
-            setClockIn(extractTime(fetchWorkTimes.data.clockIn));
-            setClockOut(extractTime(fetchWorkTimes.data.clockOut));
-            const breakDuration = fetchWorkTimes.data.breakDuration || "01:00";
-            const [hours, minutes] = breakDuration.split(":");
-            setBreakDurationHours(hours || "01");
-            setBreakDurationMinutes(minutes || "00");
+            // 通常勤務の場合
+            const clockInValue = isoStringToHourAndMinutes(data.clockIn);
+            const clockOutValue = isoStringToHourAndMinutes(data.clockOut);
+            const { hourPart, minutePart } = minutesToHourPartAndMinutesPart(data.breakDurationMinute);
+            const breakHours = hourPart || "01";
+            const breakMinutes = minutePart || "00";
+
+            // 表示用の値を設定
+            setClockIn(clockInValue);
+            setClockOut(clockOutValue);
+            setBreakDurationHours(breakHours);
+            setBreakDurationMinutes(breakMinutes);
+
+            // 復元用の値も設定
+            setBeforeUpdateWorkTime({
+              clockIn: clockInValue,
+              clockOut: clockOutValue,
+              breakDurationHours: breakHours,
+              breakDurationMinutes: breakMinutes,
+              isPaidHoliday: false,
+            });
           }
         }
       } catch (e) {
@@ -92,7 +112,7 @@ export const UpdateWorkTime = () => {
       }
     };
 
-    fetchWorkTimes();
+    fetchBeforeUpdateWorkTime();
   }, [workTimeId]);
 
   const updateWorkTimeEvent = async ({
@@ -104,6 +124,7 @@ export const UpdateWorkTime = () => {
     isPaidHoliday,
   }: RegistrationFormProps) => {
     try {
+      if (!workTimeId) return;
       await updateWorkTime(workTimeId, {
         work_time: {
           work_date: workDate,
@@ -120,10 +141,11 @@ export const UpdateWorkTime = () => {
     }
   };
 
-  const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
-    return `${date.getFullYear()}年${date.getMonth() + 1}月${date.getDate()}日`;
-  };
+  useLoginCheck({
+    redirectIf: "notLoggedIn",
+    redirectTo: "/signin",
+    onSuccess: () => setIsCheckingLogin(false),
+  });
 
   if (isCheckingLogin) return null;
 
@@ -135,7 +157,7 @@ export const UpdateWorkTime = () => {
             <Field.Label whiteSpace="nowrap" minWidth="80px">
               日付
             </Field.Label>
-            <Box>{formatDate(workDate)}</Box>
+            <Box>{toJapaneseYearMonthDay(workDate)}</Box>
           </Flex>
         </Box>
 
@@ -167,6 +189,7 @@ export const UpdateWorkTime = () => {
           </Flex>
         </Box>
 
+        {/* isPaidHoliday=trueの場合のdisabledが効かない。field外に持っていくと、有効化する。要調査。 */}
         <Box width="100%">
           <Flex align="center" gap={4} mt={3}>
             <Field.Label whiteSpace="nowrap" minWidth="80px">
@@ -218,15 +241,28 @@ export const UpdateWorkTime = () => {
           onCheckedChange={(e) => {
             setIsPaidHoliday(e.checked);
             if (e.checked) {
+              // 有給休暇に切り替える場合、時間関連の入力をクリア。
               setClockIn("");
               setClockOut("");
               setBreakDurationHours("");
               setBreakDurationMinutes("");
             } else {
-              setClockIn("08:30");
-              setClockOut("17:15");
-              setBreakDurationHours("01");
-              setBreakDurationMinutes("00");
+              // 有給休暇のチェックが外れた場合
+              if (beforeUpdateWorkTime) {
+                if (beforeUpdateWorkTime.isPaidHoliday) {
+                  // 元データが有給休暇の場合は、デフォルト設定
+                  setClockIn("08:30");
+                  setClockOut("17:15");
+                  setBreakDurationHours("01");
+                  setBreakDurationMinutes("00");
+                } else {
+                  // 元データに勤務時間がある場合、元の値を復元
+                  setClockIn(beforeUpdateWorkTime.clockIn);
+                  setClockOut(beforeUpdateWorkTime.clockOut);
+                  setBreakDurationHours(beforeUpdateWorkTime.breakDurationHours);
+                  setBreakDurationMinutes(beforeUpdateWorkTime.breakDurationMinutes);
+                }
+              }
             }
           }}
         >
@@ -241,23 +277,23 @@ export const UpdateWorkTime = () => {
         color={"black"}
         onClick={() => {
           updateWorkTimeEvent({
-            workDate,
-            clockIn,
-            clockOut,
-            breakDuration: getBreakDuration(),
-            note,
-            isPaidHoliday,
+            workDate: workDate,
+            clockIn: clockIn,
+            clockOut: clockOut,
+            breakDuration: getBreakDuration({
+              isPaidHoliday,
+              breakDurationHours,
+              breakDurationMinutes,
+            }),
+            note: note,
+            isPaidHoliday: isPaidHoliday,
           });
-          navigate(`/work_times/registration/${workTimeId}`);
         }}
       >
         修正する
       </MainButton>
-      <MainButton
-        colorPalette={"gray"}
-        color={"black"}
-        onClick={() => navigate("/work_times")}
-      >
+
+      <MainButton onClick={() => navigate("/work_times")}>
         勤務状況一覧に戻る
       </MainButton>
     </Layout>

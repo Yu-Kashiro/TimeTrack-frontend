@@ -1,7 +1,7 @@
-import { getUser } from "@/lib/api/auth";
-import { createWorkTime } from "@/lib/api/workTime";
-import { Layout } from "@/lib/utils/Layout";
-import { MainButton } from "@/lib/utils/MainButton";
+import { createWorkTime } from "@/lib/api/workTimes";
+import { useLoginCheck } from "@/lib/hooks/use-login-check";
+import { Layout } from "@/lib/components/Layout";
+import { MainButton } from "@/lib/components/MainButton";
 import type { RegistrationFormProps } from "@/types/registration-form";
 import {
   Box,
@@ -12,33 +12,23 @@ import {
   Switch,
 } from "@chakra-ui/react";
 import type { AxiosError } from "axios";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { todayDateString } from "@/lib/utils/todayDateString";
+import { getBreakDuration } from "@/lib/utils/getBreakDuration";
 
 export const Registration = () => {
   const [isCheckingLogin, setIsCheckingLogin] = useState(true);
-  const today = new Date();
-  const jstDate = new Date(today.getTime() + 9 * 60 * 60 * 1000);
-  const todayDate = jstDate.toISOString().split("T")[0];
-  const [workDate, setWorkDate] = useState(todayDate);
+
+  const [workDate, setWorkDate] = useState(todayDateString);
   const [clockIn, setClockIn] = useState("08:30");
   const [clockOut, setClockOut] = useState("17:15");
-  // const [breakDuration, setBreakDuration] = useState("01:00");
   const [breakDurationHours, setBreakDurationHours] = useState("01");
   const [breakDurationMinutes, setBreakDurationMinutes] = useState("00");
   const [note, setNote] = useState("");
   const [isPaidHoliday, setIsPaidHoliday] = useState(false);
   const [errorMessages, setErrorMessages] = useState<string[]>([]);
   const navigate = useNavigate();
-
-  const getBreakDuration = () => {
-  // 有給の場合はnull、それ以外は "hh:mm" 形式で返す
-  if (isPaidHoliday) return null;
-  // どちらかが空の場合は "00:00" 扱い
-  const hours = breakDurationHours || "00";
-  const minutes = breakDurationMinutes || "00";
-  return `${hours}:${minutes}`;
-};
 
   const createWorkTimeEvent = async (event: RegistrationFormProps) => {
     try {
@@ -55,7 +45,6 @@ export const Registration = () => {
       navigate("/work_times");
     } catch (e) {
       const err = e as AxiosError;
-
       if (
         err.response?.data &&
         typeof err.response.data === "object" &&
@@ -68,25 +57,11 @@ export const Registration = () => {
     }
   };
 
-  useEffect(() => {
-    const checkLoginStatus = async () => {
-      try {
-        const checkLoginStatus = await getUser();
-        if (
-          !checkLoginStatus ||
-          !checkLoginStatus.data ||
-          checkLoginStatus.data.isLogin === false
-        ) {
-          navigate("/signin");
-          return;
-        }
-        setIsCheckingLogin(false);
-      } catch (e) {
-        console.error("エラーが発生しました:", e);
-      }
-    };
-    checkLoginStatus();
-  }, [navigate]);
+  useLoginCheck({
+    redirectIf: "notLoggedIn",
+    redirectTo: "/signin",
+    onSuccess: () => setIsCheckingLogin(false),
+  });
 
   if (isCheckingLogin) return null;
 
@@ -135,6 +110,7 @@ export const Registration = () => {
           </Flex>
         </Box>
 
+        {/* isPaidHoliday=trueの場合のdisabledが効かない。field外に持っていくと、有効化する。要調査。 */}
         <Box width="100%">
           <Flex align="center" gap={4} mt={3}>
             <Field.Label whiteSpace="nowrap" minWidth="80px">
@@ -209,12 +185,12 @@ export const Registration = () => {
         color={"black"}
         onClick={() => {
           createWorkTimeEvent({
-            workDate,
-            clockIn,
-            clockOut,
-            breakDuration: getBreakDuration(),
-            note,
-            isPaidHoliday,
+            workDate: workDate,
+            clockIn: clockIn,
+            clockOut: clockOut,
+            breakDuration: getBreakDuration({ isPaidHoliday, breakDurationHours, breakDurationMinutes }),
+            note: note,
+            isPaidHoliday: isPaidHoliday,
           });
         }}
       >

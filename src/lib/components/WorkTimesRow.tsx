@@ -6,21 +6,18 @@ import { Link } from "react-router-dom";
 type WorkTimeRowProps = {
   id: number;
   workDate: string;
-  workMinute: string;
-  breakDurationMinute: string;
+  workHoursAndMinute: string;
 };
 
 export const WorkTimesRow = ({
   id,
   workDate,
-  workMinute,
-  breakDurationMinute,
+  workHoursAndMinute,
 }: WorkTimeRowProps) => {
   return (
     <Table.Row>
       <Table.Cell textAlign="center">{workDate}</Table.Cell>
-      <Table.Cell textAlign="center">{workMinute}</Table.Cell>
-      <Table.Cell textAlign="center">{breakDurationMinute}</Table.Cell>
+      <Table.Cell textAlign="center">{workHoursAndMinute}</Table.Cell>
       <Table.Cell>
         <Box display="flex" justifyContent="center">
           <Link to={`/work_times/${id}`}>

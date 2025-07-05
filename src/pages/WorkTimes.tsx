@@ -1,143 +1,140 @@
-"use client";
-
-import { getWorkTimesAll } from "@/lib/api/workTime";
-import { Stack, Table } from "@chakra-ui/react";
+import { getWorkTimesAll } from "@/lib/api/workTimes";
+import {
+  createListCollection,
+  Portal,
+  Select,
+  Stack,
+  Table,
+} from "@chakra-ui/react";
 import { useNavigate } from "react-router-dom";
-import { useState, useEffect, useMemo } from "react";
-import { destroyUser, getUser } from "@/lib/api/auth";
-import { Layout } from "@/lib/utils/Layout";
-import { WorkTimesRow } from "@/lib/utils/WorkTimesRow";
-import { MainButton } from "@/lib/utils/MainButton";
-import formatMinutesToHoursAndMinutes from "@/lib/utils/timeFormatter";
-
-export type WorkTimesItem = {
-  id: number;
-  workDate: string;
-  clockIn: string;
-  clockOut: string;
-  workMinute: number;
-  breakDurationMinute: number;
-  note: string;
-  approved: boolean;
-  isPaidHoliday: boolean;
-};
+import { useState, useEffect } from "react";
+import { signOut } from "@/lib/api/auth";
+import { Layout } from "@/lib/components/Layout";
+import { WorkTimesRow } from "@/lib/components/WorkTimesRow";
+import { MainButton } from "@/lib/components/MainButton";
+import { minutesToHoursAndMinutes } from "@/lib/utils/minutesToHoursAndMinutes";
+import { toJapaneseMonthDay } from "@/lib/utils/toJapaneseMonthDay";
+import { useLoginCheck } from "@/lib/hooks/use-login-check";
+import type { WorkTimesItem } from "@/types/workTimesItem";
 
 export const WorkTimes = () => {
   const navigate = useNavigate();
   const [isCheckingLogin, setIsCheckingLogin] = useState(true);
   const [workTimesItems, setWorkTimesItems] = useState<WorkTimesItem[]>([]);
 
-  const [selectedMonth, setSelectedMonth] = useState<string>(() => {
-    const now = new Date();
-    return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(
-      2,
-      "0"
-    )}`;
+  useLoginCheck({
+    redirectIf: "notLoggedIn",
+    redirectTo: "/signin",
+    onSuccess: () => setIsCheckingLogin(false),
   });
-
-  const uniqueMonths = useMemo(() => {
-    const monthsSet = new Set<string>();
-
-    workTimesItems.forEach((item) => {
-      const date = new Date(item.workDate);
-      const monthStr = `${date.getFullYear()}-${String(
-        date.getMonth() + 1
-      ).padStart(2, "0")}`;
-      monthsSet.add(monthStr);
-    });
-
-    return Array.from(monthsSet).sort();
-  }, [workTimesItems]);
 
   useEffect(() => {
     const initialize = async () => {
       try {
-        const checkLoginStatus = await getUser();
-        if (
-          !checkLoginStatus ||
-          !checkLoginStatus.data ||
-          checkLoginStatus.data.isLogin === false
-        ) {
-          navigate("/signin");
-          return;
-        }
-
         const fetchWorkTimesAll = await getWorkTimesAll();
         if (fetchWorkTimesAll && fetchWorkTimesAll.data) {
           setWorkTimesItems(fetchWorkTimesAll.data);
         }
-        setIsCheckingLogin(false);
       } catch (e) {
         console.error("エラーが発生しました:", e);
       }
     };
-
     initialize();
-  }, [navigate]);
+  }, [isCheckingLogin]);
 
-  const filteredItems = workTimesItems.filter((item) => {
-    return item.workDate.startsWith(selectedMonth);
+  const [selectedMonth, setSelectedMonth] = useState<string>(() => {
+    const now = new Date();
+    return `${now.getFullYear()}年${String(now.getMonth() + 1).padStart(
+      2,
+      "0"
+    )}月`;
   });
 
-  const totalWorkMinutes = useMemo(() => {
+  const filteredItems = workTimesItems.filter((item) => {
+    const selectedMonthDash = selectedMonth
+      .replace("年", "-")
+      .replace("月", "");
+    return item.workDate.startsWith(selectedMonthDash);
+  });
+
+  // 勤務一覧から、一意の年月を抽出
+  const yearAndMonthsSet = new Set<string>();
+  workTimesItems.forEach((item) => {
+    const date = new Date(item.workDate);
+    const yearAndMonthStr = `${date.getFullYear()}年${String(
+      date.getMonth() + 1
+    ).padStart(2, "0")}月`;
+    yearAndMonthsSet.add(yearAndMonthStr);
+  });
+
+  // ChakraUIテーブル用のCollectionフォーマットを作成
+  const uniqueMonthListCollection = createListCollection({
+    items: Array.from(yearAndMonthsSet)
+      .sort()
+      .map((month) => ({
+        label: month,
+        value: month,
+      })),
+  });
+
+  // 勤務時間の合計を算出
+  const totalWorkMinutes = () => {
     return filteredItems
       .filter((item) => !item.isPaidHoliday)
       .reduce((sum, item) => sum + item.workMinute, 0);
-  }, [filteredItems]);
-
-  const totalBreakMinutes = useMemo(() => {
-    return filteredItems
-      .filter((item) => !item.isPaidHoliday)
-      .reduce((sum, item) => sum + item.breakDurationMinute, 0);
-  }, [filteredItems]);
-
-  if (isCheckingLogin) return null;
-
-  const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
-    return `${date.getMonth() + 1}月${date.getDate()}日`;
   };
 
   const handleLogout = async () => {
     try {
-      await destroyUser();
+      await signOut();
       navigate("/signin");
     } catch (e) {
-      console.log("ログアウトできません。", e);
+      console.log("ログアウト失敗", e);
     }
   };
+
+  if (isCheckingLogin) return null;
 
   return (
     <Layout title="勤務一覧">
       <Stack gap="4">
-        <select
-          value={selectedMonth}
-          onChange={(e) => setSelectedMonth(e.target.value)}
-          style={{
-            border: "1px solid #000",
-            borderRadius: "4px",
-            padding: "8px",
-          }}
+        <Select.Root
+          collection={uniqueMonthListCollection}
+          value={[selectedMonth]}
+          onValueChange={(e) => setSelectedMonth(e.value[0])}
+          size="md"
+          defaultValue={[selectedMonth]} //初期値は現在の年月
         >
-          {uniqueMonths.map((month) => {
-            const [year, monthNum] = month.split("-");
-            return (
-              <option key={month} value={month}>
-                {`${year}年${Number(monthNum)}月`}
-              </option>
-            );
-          })}
-        </select>
+          <Select.HiddenSelect />
+          <Select.Control>
+            <Select.Trigger>
+              <Select.ValueText />
+            </Select.Trigger>
+            <Select.IndicatorGroup>
+              <Select.Indicator />
+            </Select.IndicatorGroup>
+          </Select.Control>
+          <Portal>
+            <Select.Positioner>
+              <Select.Content>
+                {uniqueMonthListCollection.items.map((uniqueMonth) => (
+                  <Select.Item item={uniqueMonth} key={uniqueMonth.value}>
+                    {uniqueMonth.label}
+                    <Select.ItemIndicator />
+                  </Select.Item>
+                ))}
+              </Select.Content>
+            </Select.Positioner>
+          </Portal>
+        </Select.Root>
 
+        {/* テーブル */}
         <Table.Root size="sm" variant="outline">
           <Table.Header>
             <Table.Row>
               <Table.ColumnHeader textAlign="center">日付</Table.ColumnHeader>
               <Table.ColumnHeader textAlign="center">
                 勤務時間
-              </Table.ColumnHeader>
-              <Table.ColumnHeader textAlign="center">
-                休憩時間
               </Table.ColumnHeader>
               <Table.ColumnHeader textAlign="center">詳細</Table.ColumnHeader>
             </Table.Row>
@@ -148,18 +145,11 @@ export const WorkTimes = () => {
               <WorkTimesRow
                 key={workTimesItem.id}
                 id={workTimesItem.id}
-                workDate={formatDate(workTimesItem.workDate)}
-                workMinute={
+                workDate={toJapaneseMonthDay(workTimesItem.workDate)}
+                workHoursAndMinute={
                   workTimesItem.isPaidHoliday
                     ? "有給"
-                    : formatMinutesToHoursAndMinutes(workTimesItem.workMinute)
-                }
-                breakDurationMinute={
-                  workTimesItem.isPaidHoliday
-                    ? ""
-                    : formatMinutesToHoursAndMinutes(
-                        workTimesItem.breakDurationMinute
-                      )
+                    : minutesToHoursAndMinutes(workTimesItem.workMinute)
                 }
               />
             ))}
@@ -169,10 +159,7 @@ export const WorkTimes = () => {
             <Table.Row>
               <Table.Cell textAlign="center">合計</Table.Cell>
               <Table.Cell textAlign="center">
-                {formatMinutesToHoursAndMinutes(totalWorkMinutes)}
-              </Table.Cell>
-              <Table.Cell textAlign="center">
-                {formatMinutesToHoursAndMinutes(totalBreakMinutes)}
+                {minutesToHoursAndMinutes(totalWorkMinutes())}
               </Table.Cell>
               <Table.Cell textAlign="center">ー</Table.Cell>
             </Table.Row>
@@ -182,17 +169,13 @@ export const WorkTimes = () => {
         <MainButton
           colorPalette={"blue"}
           color={"black"}
-          children="勤務時間を登録する"
           onClick={() => navigate("/work_times/registration")}
-        />
+        >
+          勤務時間を登録する
+        </MainButton>
       </Stack>
-      <MainButton
-        colorPalette={"gray"}
-        onClick={() => handleLogout()}
-        color={"black"}
-      >
-        ログアウトする
-      </MainButton>
+
+      <MainButton onClick={() => handleLogout()}>ログアウトする</MainButton>
     </Layout>
   );
 };

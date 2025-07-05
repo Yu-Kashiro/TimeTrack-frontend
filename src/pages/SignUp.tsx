@@ -1,11 +1,11 @@
 import { Input } from "@chakra-ui/react/input";
 import { Link } from "react-router-dom";
 import { Field } from "@chakra-ui/react/field";
-import { PasswordInput } from "@/components/ui/password-input";
+import { PasswordInput } from "@/lib/components/defaultChakraUIComponents/password-input";
 import { Box } from "@chakra-ui/react/box";
-import { Layout } from "@/lib/utils/Layout";
-import { MainButton } from "@/lib/utils/MainButton";
-import { ErrorMessage } from "@/lib/utils/ErrorMessage";
+import { Layout } from "@/lib/components/Layout";
+import { MainButton } from "@/lib/components/MainButton";
+import { ErrorMessage } from "@/lib/components/ErrorMessage";
 import { useLoginCheck } from "@/lib/hooks/use-login-check";
 import { useState } from "react";
 import { useSignUpForm } from "@/lib/hooks/use-sign-up-form";
@@ -13,6 +13,7 @@ import { useSignUpForm } from "@/lib/hooks/use-sign-up-form";
 export const SignUp = () => {
   const [isCheckingLogin, setIsCheckingLogin] = useState(true);
   const { errorMessage, register, errors, isValid, onSubmit } = useSignUpForm();
+
   useLoginCheck({
     redirectIf: "loggedIn",
     redirectTo: "/work_times",
@@ -20,7 +21,6 @@ export const SignUp = () => {
   });
 
   if (isCheckingLogin) return null;
-
 
   return (
     <form onSubmit={onSubmit}>

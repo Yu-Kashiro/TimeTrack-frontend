@@ -1,12 +1,12 @@
-import type { SignInFormValues } from "@/types/auth-forms";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import Cookies from "js-cookie";
 import { useNavigate } from "react-router-dom";
 import { signIn } from "../api/auth";
+import { secureCookieOptions } from "../utils/secureCookieOptions";
+import type { SignInFormValues } from "@/types/signInFormValues";
 
 export const useSignInForm = () => {
-
   const navigate = useNavigate();
   const [errorMessage, setErrorMessage] = useState("");
 
@@ -19,15 +19,9 @@ export const useSignInForm = () => {
   const onSubmit = handleSubmit(async (data) => {
     try {
       const res = await signIn(data);
-
-      const cookieOptions = {
-        secure: true,
-        sameSite: 'strict' as const,
-      };
-
-      Cookies.set("_access_token", res.headers["access-token"], cookieOptions);
-      Cookies.set("_client", res.headers["client"], cookieOptions);
-      Cookies.set("_uid", res.headers["uid"], cookieOptions);
+      Cookies.set("_access_token", res.headers["access-token"], secureCookieOptions);
+      Cookies.set("_client", res.headers["client"], secureCookieOptions);
+      Cookies.set("_uid", res.headers["uid"], secureCookieOptions);
       navigate("/work_times/registration");
     } catch (e) {
         console.log(e);

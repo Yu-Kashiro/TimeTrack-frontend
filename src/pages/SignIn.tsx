@@ -1,11 +1,11 @@
 import { Input } from "@chakra-ui/react/input";
 import { Link } from "react-router-dom";
 import { Field } from "@chakra-ui/react/field";
-import { PasswordInput } from "@/components/ui/password-input";
+import { PasswordInput } from "@/lib/components/defaultChakraUIComponents/password-input";
 import { Box } from "@chakra-ui/react/box";
-import { MainButton } from "@/lib/utils/MainButton";
-import { Layout } from "@/lib/utils/Layout";
-import { ErrorMessage } from "@/lib/utils/ErrorMessage";
+import { MainButton } from "@/lib/components/MainButton";
+import { Layout } from "@/lib/components/Layout";
+import { ErrorMessage } from "@/lib/components/ErrorMessage";
 import { useLoginCheck } from "@/lib/hooks/use-login-check";
 import { useSignInForm } from "@/lib/hooks/use-sign-in-form";
 import { useState } from "react";

@@ -1,23 +1,31 @@
-import { getUser } from "@/lib/api/auth";
-import { deleteWorkTimes, getWorkTimes } from "@/lib/api/workTime";
-import { Layout } from "@/lib/utils/Layout";
-import { MainButton } from "@/lib/utils/MainButton";
+import { deleteWorkTimes, getWorkTimes } from "@/lib/api/workTimes";
+import { Layout } from "@/lib/components/Layout";
+import { MainButton } from "@/lib/components/MainButton";
 import { Box, Table } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
-import type { WorkTimesItem } from "./WorkTimes";
-import { DeleteButton } from "@/lib/utils/DeleteButton";
-import formatMinutesToHoursAndMinutes from "@/lib/utils/timeFormatter";
+import { DeleteButton } from "@/lib/components/DeleteButton";
+import { minutesToHoursAndMinutes } from "@/lib/utils/minutesToHoursAndMinutes";
+import type { WorkTimesItem } from "@/types/workTimesItem";
+import { useLoginCheck } from "@/lib/hooks/use-login-check";
+import { toJapaneseYearMonthDay } from "@/lib/utils/toJapaneseYearMonthDay";
+import { toJapaneseHourMinutes } from "@/lib/utils/toJapaneseHourMinutes";
 
 export const WorkTimeDetail = () => {
   const navigate = useNavigate();
   const { workTimeId } = useParams();
   const [workTimesItem, setWorkTimesItem] = useState<WorkTimesItem>();
-
   const [isCheckingLogin, setIsCheckingLogin] = useState(true);
+
+  useLoginCheck({
+    redirectIf: "notLoggedIn",
+    redirectTo: "/signin",
+    onSuccess: () => setIsCheckingLogin(false),
+  });
 
   const destroyWorkTime = async () => {
     try {
+      if (!workTimeId) return;
       await deleteWorkTimes(workTimeId);
       navigate("/work_times");
     } catch (e) {
@@ -28,49 +36,20 @@ export const WorkTimeDetail = () => {
   useEffect(() => {
     const initialize = async () => {
       try {
-        const checkLoginStatus = await getUser();
-        if (
-          !checkLoginStatus ||
-          !checkLoginStatus.data ||
-          checkLoginStatus.data.isLogin === false
-        ) {
-          navigate("/signin");
-          return;
-        }
-
+        if (!workTimeId) return;
         const fetchWorkTimes = await getWorkTimes(workTimeId);
         if (fetchWorkTimes && fetchWorkTimes.data) {
           setWorkTimesItem(fetchWorkTimes.data);
+          console.log(fetchWorkTimes.data)
         }
-        setIsCheckingLogin(false);
       } catch (e) {
         console.error("エラーが発生しました:", e);
       }
     };
-
     initialize();
-  }, [navigate, workTimeId]);
+  }, [workTimeId]);
 
   if (isCheckingLogin || !workTimesItem) return null;
-
-  const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
-    return `${date.getFullYear()}年${date.getMonth() + 1}月${date.getDate()}日`;
-  };
-
-  const formatTime = (isoString: string) => {
-    const date = new Date(isoString);
-    return (
-      date
-        .toLocaleTimeString("ja-JP", {
-          hour: "2-digit",
-          minute: "2-digit",
-          hour12: false,
-          timeZone: "Asia/Tokyo", // 明示的にJSTで表示
-        })
-        .replace(":", "時") + "分"
-    );
-  };
 
   return (
     <Layout title="出勤詳細">
@@ -78,20 +57,26 @@ export const WorkTimeDetail = () => {
         <Table.Body>
           <Table.Row>
             <Table.Cell>日付</Table.Cell>
-            <Table.Cell>{formatDate(workTimesItem.workDate)}</Table.Cell>
+            <Table.Cell>
+              {toJapaneseYearMonthDay(workTimesItem.workDate)}
+            </Table.Cell>
           </Table.Row>
         </Table.Body>
         <Table.Body>
           <Table.Row>
             <Table.Cell>始業時間</Table.Cell>
             <Table.Cell>
-              {workTimesItem.clockIn ? formatTime(workTimesItem.clockIn) : ""}
+              {workTimesItem.clockIn
+                ? toJapaneseHourMinutes(workTimesItem.clockIn)
+                : ""}
             </Table.Cell>
           </Table.Row>
           <Table.Row>
             <Table.Cell>終業時間</Table.Cell>
             <Table.Cell>
-              {workTimesItem.clockOut ? formatTime(workTimesItem.clockOut) : ""}
+              {workTimesItem.clockOut
+                ? toJapaneseHourMinutes(workTimesItem.clockOut)
+                : ""}
             </Table.Cell>
           </Table.Row>
         </Table.Body>
@@ -99,7 +84,7 @@ export const WorkTimeDetail = () => {
           <Table.Row>
             <Table.Cell>勤務時間</Table.Cell>
             <Table.Cell>
-              {formatMinutesToHoursAndMinutes(workTimesItem.workMinute)}
+              {minutesToHoursAndMinutes(workTimesItem.workMinute)}
             </Table.Cell>
           </Table.Row>
         </Table.Body>
@@ -107,9 +92,7 @@ export const WorkTimeDetail = () => {
           <Table.Row>
             <Table.Cell>休憩時間</Table.Cell>
             <Table.Cell>
-              {formatMinutesToHoursAndMinutes(
-                workTimesItem.breakDurationMinute
-              )}
+              {minutesToHoursAndMinutes(workTimesItem.breakDurationMinute)}
             </Table.Cell>
           </Table.Row>
         </Table.Body>
