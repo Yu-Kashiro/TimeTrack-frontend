@@ -40,7 +40,6 @@ export const WorkTimeDetail = () => {
         const fetchWorkTimes = await getWorkTimes(workTimeId);
         if (fetchWorkTimes && fetchWorkTimes.data) {
           setWorkTimesItem(fetchWorkTimes.data);
-          console.log(fetchWorkTimes.data)
         }
       } catch (e) {
         console.error("エラーが発生しました:", e);
