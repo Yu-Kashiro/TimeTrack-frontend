@@ -9,6 +9,7 @@ import type { SignInFormValues } from "@/types/signInFormValues";
 export const useSignInForm = () => {
   const navigate = useNavigate();
   const [errorMessage, setErrorMessage] = useState("");
+  const [isSubmittingLogin, setIsSubmittingLogin] = useState(false);
 
   const {
     register,
@@ -17,20 +18,25 @@ export const useSignInForm = () => {
   } = useForm<SignInFormValues>({ mode: "onChange" });
 
   const onSubmit = handleSubmit(async (data) => {
+    setIsSubmittingLogin(true);
     try {
       const res = await signIn(data);
-      Cookies.set("_access_token", res.headers["access-token"], secureCookieOptions);
+      Cookies.set(
+        "_access_token",
+        res.headers["access-token"],
+        secureCookieOptions
+      );
       Cookies.set("_client", res.headers["client"], secureCookieOptions);
       Cookies.set("_uid", res.headers["uid"], secureCookieOptions);
       navigate("/work_times/registration");
     } catch (e) {
-        console.log(e);
+      console.log(e);
+      setIsSubmittingLogin(false);
       setErrorMessage(
         "ログインに失敗しました。メールアドレスとパスワードを確認してください。"
       );
     }
   });
 
-  return { errorMessage, register, errors, isValid, onSubmit };
-
+  return { errorMessage, register, errors, isValid, onSubmit, isSubmittingLogin };
 };
