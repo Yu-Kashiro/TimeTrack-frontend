@@ -136,9 +136,21 @@ export const WorkTimes = () => {
           </Select.Control>
           <Portal>
             <Select.Positioner>
-              <Select.Content>
+              <Select.Content
+                bg="white"
+                borderColor="gray.200"
+                boxShadow="md"
+                className="chakra-theme light"
+              >
                 {uniqueMonthListCollection.items.map((uniqueMonth) => (
-                  <Select.Item item={uniqueMonth} key={uniqueMonth.value}>
+                  <Select.Item
+                    item={uniqueMonth}
+                    key={uniqueMonth.value}
+                    bg="white"
+                    color="black"
+                    _hover={{ bg: "gray.50" }}
+                    _selected={{ bg: "blue.50", color: "blue.600" }}
+                  >
                     {uniqueMonth.label}
                     <Select.ItemIndicator />
                   </Select.Item>
