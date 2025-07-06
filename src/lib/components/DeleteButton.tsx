@@ -20,25 +20,31 @@ export const DeleteButton = ({ onClick }: DeleteButtonProps) => {
       <Portal>
         <Dialog.Backdrop />
         <Dialog.Positioner>
-          <Dialog.Content style={{ background: "#fff" }}>
+          <Dialog.Content
+            bg="white"
+            color="black"
+            borderColor="gray.200"
+            boxShadow="lg"
+            className="chakra-theme light"
+          >
             <Dialog.Header>
-              <Dialog.Title>
+              <Dialog.Title color="black">
                 <p>この出勤記録を削除しますか？</p>
               </Dialog.Title>
             </Dialog.Header>
-            <Dialog.Body>
+            <Dialog.Body color="black">
               <p>削除した出勤記録は復元できません</p>
             </Dialog.Body>
             <Dialog.Footer>
               <Dialog.ActionTrigger asChild>
-                <Button variant="outline" color="black">キャンセル</Button>
+                <Button variant="outline" color="black" borderColor="gray.300">キャンセル</Button>
               </Dialog.ActionTrigger>
               <Button colorPalette="red" onClick={onClick}>
                 削除する
               </Button>
             </Dialog.Footer>
             <Dialog.CloseTrigger asChild>
-              <CloseButton size="sm" />
+              <CloseButton size="sm" color="black" />
             </Dialog.CloseTrigger>
           </Dialog.Content>
         </Dialog.Positioner>

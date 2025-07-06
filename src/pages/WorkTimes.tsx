@@ -34,7 +34,7 @@ export const WorkTimes = () => {
 
   useEffect(() => {
     const initialize = async () => {
-      setIsLoading(true); // 追加: ローディング開始
+      setIsLoading(true);
       try {
         const fetchWorkTimesAll = await getWorkTimesAll();
         if (fetchWorkTimesAll && fetchWorkTimesAll.data) {
@@ -43,7 +43,7 @@ export const WorkTimes = () => {
       } catch (e) {
         console.error("エラーが発生しました:", e);
       } finally {
-        setIsLoading(false); // 追加: ローディング終了
+        setIsLoading(false);
       }
     };
     initialize();
@@ -136,9 +136,21 @@ export const WorkTimes = () => {
           </Select.Control>
           <Portal>
             <Select.Positioner>
-              <Select.Content>
+              <Select.Content
+                bg="white"
+                borderColor="gray.200"
+                boxShadow="md"
+                className="chakra-theme light"
+              >
                 {uniqueMonthListCollection.items.map((uniqueMonth) => (
-                  <Select.Item item={uniqueMonth} key={uniqueMonth.value}>
+                  <Select.Item
+                    item={uniqueMonth}
+                    key={uniqueMonth.value}
+                    bg="white"
+                    color="black"
+                    _hover={{ bg: "gray.50" }}
+                    _selected={{ bg: "blue.50", color: "blue.600" }}
+                  >
                     {uniqueMonth.label}
                     <Select.ItemIndicator />
                   </Select.Item>
