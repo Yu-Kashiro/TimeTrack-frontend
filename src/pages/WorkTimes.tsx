@@ -14,7 +14,7 @@ import { WorkTimesRow } from "@/lib/components/WorkTimesRow";
 import { MainButton } from "@/lib/components/MainButton";
 import { minutesToHoursAndMinutes } from "@/lib/utils/minutesToHoursAndMinutes";
 import { toJapaneseMonthDay } from "@/lib/utils/toJapaneseMonthDay";
-import { useLoginCheck } from "@/lib/hooks/use-login-check";
+import { useLoginCheck } from "@/lib/hooks/useLoginCheck";
 import type { WorkTimesItem } from "@/types/workTimesItem";
 
 export const WorkTimes = () => {

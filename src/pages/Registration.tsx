@@ -1,5 +1,5 @@
 import { createWorkTime } from "@/lib/api/workTimes";
-import { useLoginCheck } from "@/lib/hooks/use-login-check";
+import { useLoginCheck } from "@/lib/hooks/useLoginCheck";
 import { Layout } from "@/lib/components/Layout";
 import { MainButton } from "@/lib/components/MainButton";
 import type { RegistrationFormProps } from "@/types/registration-form";
@@ -188,7 +188,11 @@ export const Registration = () => {
             workDate: workDate,
             clockIn: clockIn,
             clockOut: clockOut,
-            breakDuration: getBreakDuration({ isPaidHoliday, breakDurationHours, breakDurationMinutes }),
+            breakDuration: getBreakDuration({
+              isPaidHoliday,
+              breakDurationHours,
+              breakDurationMinutes,
+            }),
             note: note,
             isPaidHoliday: isPaidHoliday,
           });

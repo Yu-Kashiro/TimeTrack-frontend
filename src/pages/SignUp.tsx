@@ -6,14 +6,21 @@ import { Box } from "@chakra-ui/react/box";
 import { Layout } from "@/lib/components/Layout";
 import { MainButton } from "@/lib/components/MainButton";
 import { ErrorMessage } from "@/lib/components/ErrorMessage";
-import { useLoginCheck } from "@/lib/hooks/use-login-check";
+import { useLoginCheck } from "@/lib/hooks/useLoginCheck";
 import { useState } from "react";
-import { useSignUpForm } from "@/lib/hooks/use-sign-up-form";
+import { useSignUpForm } from "@/lib/hooks/useSignUpForm";
 import { Spinner } from "@chakra-ui/react/spinner";
 
 export const SignUp = () => {
   const [isCheckingLogin, setIsCheckingLogin] = useState(true);
-  const { errorMessage, register, errors, isValid, onSubmit, isSubmittingSignUp } = useSignUpForm();
+  const {
+    errorMessage,
+    register,
+    errors,
+    isValid,
+    onSubmit,
+    isSubmittingSignUp,
+  } = useSignUpForm();
 
   useLoginCheck({
     redirectIf: "loggedIn",

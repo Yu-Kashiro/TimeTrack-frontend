@@ -1,7 +1,7 @@
 import { getWorkTimes, updateWorkTime } from "@/lib/api/workTimes";
 import { Layout } from "@/lib/components/Layout";
 import { MainButton } from "@/lib/components/MainButton";
-import { useLoginCheck } from "@/lib/hooks/use-login-check";
+import { useLoginCheck } from "@/lib/hooks/useLoginCheck";
 import { getBreakDuration } from "@/lib/utils/getBreakDuration";
 import { isoStringToHourAndMinutes } from "@/lib/utils/isoStringToHourAndMinutes";
 import { minutesToHourPartAndMinutesPart } from "@/lib/utils/minutesToHourPartAndMinutesPart";
@@ -87,7 +87,9 @@ export const UpdateWorkTime = () => {
             // 通常勤務の場合
             const clockInValue = isoStringToHourAndMinutes(data.clockIn);
             const clockOutValue = isoStringToHourAndMinutes(data.clockOut);
-            const { hourPart, minutePart } = minutesToHourPartAndMinutesPart(data.breakDurationMinute);
+            const { hourPart, minutePart } = minutesToHourPartAndMinutesPart(
+              data.breakDurationMinute
+            );
             const breakHours = hourPart || "01";
             const breakMinutes = minutePart || "00";
 
@@ -259,8 +261,12 @@ export const UpdateWorkTime = () => {
                   // 元データに勤務時間がある場合、元の値を復元
                   setClockIn(beforeUpdateWorkTime.clockIn);
                   setClockOut(beforeUpdateWorkTime.clockOut);
-                  setBreakDurationHours(beforeUpdateWorkTime.breakDurationHours);
-                  setBreakDurationMinutes(beforeUpdateWorkTime.breakDurationMinutes);
+                  setBreakDurationHours(
+                    beforeUpdateWorkTime.breakDurationHours
+                  );
+                  setBreakDurationMinutes(
+                    beforeUpdateWorkTime.breakDurationMinutes
+                  );
                 }
               }
             }

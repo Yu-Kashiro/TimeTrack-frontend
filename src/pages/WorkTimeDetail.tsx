@@ -7,7 +7,7 @@ import { Link, useNavigate, useParams } from "react-router-dom";
 import { DeleteButton } from "@/lib/components/DeleteButton";
 import { minutesToHoursAndMinutes } from "@/lib/utils/minutesToHoursAndMinutes";
 import type { WorkTimesItem } from "@/types/workTimesItem";
-import { useLoginCheck } from "@/lib/hooks/use-login-check";
+import { useLoginCheck } from "@/lib/hooks/useLoginCheck";
 import { toJapaneseYearMonthDay } from "@/lib/utils/toJapaneseYearMonthDay";
 import { toJapaneseHourMinutes } from "@/lib/utils/toJapaneseHourMinutes";
 

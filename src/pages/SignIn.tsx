@@ -6,8 +6,8 @@ import { Box } from "@chakra-ui/react/box";
 import { MainButton } from "@/lib/components/MainButton";
 import { Layout } from "@/lib/components/Layout";
 import { ErrorMessage } from "@/lib/components/ErrorMessage";
-import { useLoginCheck } from "@/lib/hooks/use-login-check";
-import { useSignInForm } from "@/lib/hooks/use-sign-in-form";
+import { useLoginCheck } from "@/lib/hooks/useLoginCheck";
+import { useSignInForm } from "@/lib/hooks/useSignInForm";
 import { useState } from "react";
 import { Spinner } from "@chakra-ui/react/spinner";
 
