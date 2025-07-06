@@ -9,6 +9,7 @@ import {
   Flex,
   Input,
   NativeSelect,
+  Spinner,
   Switch,
 } from "@chakra-ui/react";
 import type { AxiosError } from "axios";
@@ -30,7 +31,10 @@ export const Registration = () => {
   const [errorMessages, setErrorMessages] = useState<string[]>([]);
   const navigate = useNavigate();
 
+  const [isLoading, setIsLoading] = useState(false);
+
   const createWorkTimeEvent = async (event: RegistrationFormProps) => {
+    setIsLoading(true);
     try {
       await createWorkTime({
         work_time: {
@@ -44,6 +48,7 @@ export const Registration = () => {
       });
       navigate("/work_times");
     } catch (e) {
+      setIsLoading(false);
       const err = e as AxiosError;
       if (
         err.response?.data &&
@@ -180,26 +185,32 @@ export const Registration = () => {
         </Switch.Root>
       </Flex>
 
-      <MainButton
-        colorPalette={"blue"}
-        color={"black"}
-        onClick={() => {
-          createWorkTimeEvent({
-            workDate: workDate,
-            clockIn: clockIn,
-            clockOut: clockOut,
-            breakDuration: getBreakDuration({
-              isPaidHoliday,
-              breakDurationHours,
-              breakDurationMinutes,
-            }),
-            note: note,
-            isPaidHoliday: isPaidHoliday,
-          });
-        }}
-      >
-        登録する
-      </MainButton>
+      {isLoading ? (
+        <Box textAlign="center">
+          <Spinner size="sm" />
+        </Box>
+      ) : (
+        <MainButton
+          colorPalette={"blue"}
+          color={"black"}
+          onClick={() => {
+            createWorkTimeEvent({
+              workDate: workDate,
+              clockIn: clockIn,
+              clockOut: clockOut,
+              breakDuration: getBreakDuration({
+                isPaidHoliday,
+                breakDurationHours,
+                breakDurationMinutes,
+              }),
+              note: note,
+              isPaidHoliday: isPaidHoliday,
+            });
+          }}
+        >
+          登録する
+        </MainButton>
+      )}
 
       {errorMessages.length > 0 && (
         <Box color="red" textAlign={"center"}>
