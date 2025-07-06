@@ -6,13 +6,21 @@ import { Box } from "@chakra-ui/react/box";
 import { MainButton } from "@/lib/components/MainButton";
 import { Layout } from "@/lib/components/Layout";
 import { ErrorMessage } from "@/lib/components/ErrorMessage";
-import { useLoginCheck } from "@/lib/hooks/use-login-check";
-import { useSignInForm } from "@/lib/hooks/use-sign-in-form";
+import { useLoginCheck } from "@/lib/hooks/useLoginCheck";
+import { useSignInForm } from "@/lib/hooks/useSignInForm";
 import { useState } from "react";
+import { Spinner } from "@chakra-ui/react/spinner";
 
 export const SignIn = () => {
   const [isCheckingLogin, setIsCheckingLogin] = useState(true);
-  const { errorMessage, register, errors, isValid, onSubmit } = useSignInForm();
+  const {
+    errorMessage,
+    register,
+    errors,
+    isValid,
+    onSubmit,
+    isSubmittingLogin,
+  } = useSignInForm();
 
   useLoginCheck({
     redirectIf: "loggedIn",
@@ -41,9 +49,15 @@ export const SignIn = () => {
           <Field.ErrorText>{errors.password?.message}</Field.ErrorText>
         </Field.Root>
 
-        <MainButton colorPalette="blue" color="black" disabled={!isValid}>
-          ログインする
-        </MainButton>
+        {isSubmittingLogin ? (
+          <Box textAlign="center">
+            <Spinner size="sm" />
+          </Box>
+        ) : (
+          <MainButton colorPalette="blue" color="black" disabled={!isValid}>
+            ログインする
+          </MainButton>
+        )}
 
         <ErrorMessage errorMessage={errorMessage} />
 

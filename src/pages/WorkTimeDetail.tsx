@@ -1,13 +1,13 @@
 import { deleteWorkTimes, getWorkTimes } from "@/lib/api/workTimes";
 import { Layout } from "@/lib/components/Layout";
 import { MainButton } from "@/lib/components/MainButton";
-import { Box, Table } from "@chakra-ui/react";
+import { Box, Spinner, Table } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { DeleteButton } from "@/lib/components/DeleteButton";
 import { minutesToHoursAndMinutes } from "@/lib/utils/minutesToHoursAndMinutes";
 import type { WorkTimesItem } from "@/types/workTimesItem";
-import { useLoginCheck } from "@/lib/hooks/use-login-check";
+import { useLoginCheck } from "@/lib/hooks/useLoginCheck";
 import { toJapaneseYearMonthDay } from "@/lib/utils/toJapaneseYearMonthDay";
 import { toJapaneseHourMinutes } from "@/lib/utils/toJapaneseHourMinutes";
 
@@ -16,6 +16,7 @@ export const WorkTimeDetail = () => {
   const { workTimeId } = useParams();
   const [workTimesItem, setWorkTimesItem] = useState<WorkTimesItem>();
   const [isCheckingLogin, setIsCheckingLogin] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
 
   useLoginCheck({
     redirectIf: "notLoggedIn",
@@ -24,11 +25,13 @@ export const WorkTimeDetail = () => {
   });
 
   const destroyWorkTime = async () => {
+    setIsLoading(true);
     try {
       if (!workTimeId) return;
       await deleteWorkTimes(workTimeId);
       navigate("/work_times");
     } catch (e) {
+      setIsLoading(false);
       console.error("エラーが発生しました:", e);
     }
   };
@@ -40,7 +43,6 @@ export const WorkTimeDetail = () => {
         const fetchWorkTimes = await getWorkTimes(workTimeId);
         if (fetchWorkTimes && fetchWorkTimes.data) {
           setWorkTimesItem(fetchWorkTimes.data);
-          console.log(fetchWorkTimes.data)
         }
       } catch (e) {
         console.error("エラーが発生しました:", e);
@@ -117,6 +119,7 @@ export const WorkTimeDetail = () => {
           </Table.Row>
         </Table.Body>
       </Table.Root>
+
       <MainButton
         colorPalette={"blue"}
         color={"black"}
@@ -125,7 +128,13 @@ export const WorkTimeDetail = () => {
         修正する
       </MainButton>
 
-      <DeleteButton onClick={() => destroyWorkTime()} />
+      {isLoading ? (
+        <Box textAlign="center">
+          <Spinner size="sm" />
+        </Box>
+      ) : (
+        <DeleteButton onClick={() => destroyWorkTime()} />
+      )}
 
       <Box textAlign="center">
         <Link to="/work_times">勤務一覧に戻る</Link>
