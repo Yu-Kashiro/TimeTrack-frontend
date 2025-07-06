@@ -34,7 +34,7 @@ export const WorkTimes = () => {
 
   useEffect(() => {
     const initialize = async () => {
-      setIsLoading(true); // 追加: ローディング開始
+      setIsLoading(true);
       try {
         const fetchWorkTimesAll = await getWorkTimesAll();
         if (fetchWorkTimesAll && fetchWorkTimesAll.data) {
@@ -43,7 +43,7 @@ export const WorkTimes = () => {
       } catch (e) {
         console.error("エラーが発生しました:", e);
       } finally {
-        setIsLoading(false); // 追加: ローディング終了
+        setIsLoading(false);
       }
     };
     initialize();
