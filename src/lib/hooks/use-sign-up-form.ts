@@ -9,6 +9,7 @@ import type { SignUpFormValues } from "@/types/signUpFormValues";
 export const useSignUpForm = () => {
   const navigate = useNavigate();
   const [errorMessage, setErrorMessage] = useState("");
+  const [isSubmittingSignUp, setIsSubmittingSignUp] = useState(false);
 
   const {
     register,
@@ -17,6 +18,7 @@ export const useSignUpForm = () => {
   } = useForm<SignUpFormValues>({ mode: "onChange" });
 
   const onSubmit = handleSubmit(async (data) => {
+    setIsSubmittingSignUp(true);
     try {
       const res = await signUp(data);
       Cookies.set("_access_token", res.headers["access-token"], secureCookieOptions);
@@ -25,11 +27,12 @@ export const useSignUpForm = () => {
       navigate("/work_times/registration");
     } catch (e) {
       console.log(e);
+      setIsSubmittingSignUp(false);
       setErrorMessage(
         "新規登録に失敗しました。氏名、メールアドレス、パスワードを確認してください。"
       );
     }
   });
 
-  return { errorMessage, register, errors, isValid, onSubmit };
+  return { errorMessage, register, errors, isValid, onSubmit, isSubmittingSignUp };
 };

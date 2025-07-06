@@ -9,10 +9,11 @@ import { ErrorMessage } from "@/lib/components/ErrorMessage";
 import { useLoginCheck } from "@/lib/hooks/use-login-check";
 import { useState } from "react";
 import { useSignUpForm } from "@/lib/hooks/use-sign-up-form";
+import { Spinner } from "@chakra-ui/react/spinner";
 
 export const SignUp = () => {
   const [isCheckingLogin, setIsCheckingLogin] = useState(true);
-  const { errorMessage, register, errors, isValid, onSubmit } = useSignUpForm();
+  const { errorMessage, register, errors, isValid, onSubmit, isSubmittingSignUp } = useSignUpForm();
 
   useLoginCheck({
     redirectIf: "loggedIn",
@@ -47,9 +48,15 @@ export const SignUp = () => {
           <Field.ErrorText>{errors.password?.message}</Field.ErrorText>
         </Field.Root>
 
-        <MainButton colorPalette="blue" color="black" disabled={!isValid}>
-          登録する
-        </MainButton>
+        {isSubmittingSignUp ? (
+          <Box textAlign="center">
+            <Spinner size="sm" />
+          </Box>
+        ) : (
+          <MainButton colorPalette="blue" color="black" disabled={!isValid}>
+            登録する
+          </MainButton>
+        )}
 
         <ErrorMessage errorMessage={errorMessage} />
 
