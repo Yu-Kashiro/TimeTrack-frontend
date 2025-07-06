@@ -1,8 +1,10 @@
 import { getWorkTimesAll } from "@/lib/api/workTimes";
 import {
+  Box,
   createListCollection,
   Portal,
   Select,
+  Spinner,
   Stack,
   Table,
 } from "@chakra-ui/react";
@@ -21,6 +23,8 @@ export const WorkTimes = () => {
   const navigate = useNavigate();
   const [isCheckingLogin, setIsCheckingLogin] = useState(true);
   const [workTimesItems, setWorkTimesItems] = useState<WorkTimesItem[]>([]);
+
+  const [isLoading, setIsLoading] = useState(false);
 
   useLoginCheck({
     redirectIf: "notLoggedIn",
@@ -85,10 +89,12 @@ export const WorkTimes = () => {
   };
 
   const handleLogout = async () => {
+    setIsLoading(true);
     try {
       await signOut();
       navigate("/signin");
     } catch (e) {
+      setIsLoading(false);
       console.log("ログアウト失敗", e);
     }
   };
@@ -175,7 +181,13 @@ export const WorkTimes = () => {
         </MainButton>
       </Stack>
 
-      <MainButton onClick={() => handleLogout()}>ログアウトする</MainButton>
+      {isLoading ? (
+        <Box textAlign="center">
+          <Spinner size="sm" />
+        </Box>
+      ) : (
+        <MainButton onClick={() => handleLogout()}>ログアウトする</MainButton>
+      )}
     </Layout>
   );
 };
