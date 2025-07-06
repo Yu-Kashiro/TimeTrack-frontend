@@ -65,9 +65,6 @@ export const SignIn = () => {
           <Link to="../signup">ユーザー登録はこちら</Link>
         </Box>
 
-        <Box textAlign="center">
-          <Link to="">パスワードを再設定</Link>
-        </Box>
       </Layout>
     </form>
   );
