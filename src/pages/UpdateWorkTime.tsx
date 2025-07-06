@@ -13,6 +13,7 @@ import {
   Flex,
   Input,
   NativeSelect,
+  Spinner,
   Switch,
 } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
@@ -28,6 +29,8 @@ export const UpdateWorkTime = () => {
   const [breakDurationMinutes, setBreakDurationMinutes] = useState("");
   const [note, setNote] = useState("");
   const [isPaidHoliday, setIsPaidHoliday] = useState(false);
+
+  const [isLoading, setIsLoading] = useState(false);
 
   const [beforeUpdateWorkTime, setBeforeUpdateWorkTime] = useState<{
     clockIn: string;
@@ -127,6 +130,7 @@ export const UpdateWorkTime = () => {
   }: RegistrationFormProps) => {
     try {
       if (!workTimeId) return;
+      setIsLoading(true);
       await updateWorkTime(workTimeId, {
         work_time: {
           work_date: workDate,
@@ -139,6 +143,7 @@ export const UpdateWorkTime = () => {
       });
       navigate(`/work_times/${workTimeId}`);
     } catch (e) {
+      setIsLoading(false);
       console.error("エラーが発生しました。", e);
     }
   };
@@ -278,26 +283,32 @@ export const UpdateWorkTime = () => {
         </Switch.Root>
       </Flex>
 
-      <MainButton
-        colorPalette={"blue"}
-        color={"black"}
-        onClick={() => {
-          updateWorkTimeEvent({
-            workDate: workDate,
-            clockIn: clockIn,
-            clockOut: clockOut,
-            breakDuration: getBreakDuration({
-              isPaidHoliday,
-              breakDurationHours,
-              breakDurationMinutes,
-            }),
-            note: note,
-            isPaidHoliday: isPaidHoliday,
-          });
-        }}
-      >
-        修正する
-      </MainButton>
+      {isLoading ? (
+        <Box textAlign="center">
+          <Spinner size="sm" />
+        </Box>
+      ) : (
+        <MainButton
+          colorPalette={"blue"}
+          color={"black"}
+          onClick={() => {
+            updateWorkTimeEvent({
+              workDate: workDate,
+              clockIn: clockIn,
+              clockOut: clockOut,
+              breakDuration: getBreakDuration({
+                isPaidHoliday,
+                breakDurationHours,
+                breakDurationMinutes,
+              }),
+              note: note,
+              isPaidHoliday: isPaidHoliday,
+            });
+          }}
+        >
+          修正する
+        </MainButton>
+      )}
 
       <MainButton onClick={() => navigate("/work_times")}>
         勤務状況一覧に戻る
