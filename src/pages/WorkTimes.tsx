@@ -34,6 +34,7 @@ export const WorkTimes = () => {
 
   useEffect(() => {
     const initialize = async () => {
+      setIsLoading(true); // 追加: ローディング開始
       try {
         const fetchWorkTimesAll = await getWorkTimesAll();
         if (fetchWorkTimesAll && fetchWorkTimesAll.data) {
@@ -41,6 +42,8 @@ export const WorkTimes = () => {
         }
       } catch (e) {
         console.error("エラーが発生しました:", e);
+      } finally {
+        setIsLoading(false); // 追加: ローディング終了
       }
     };
     initialize();
@@ -100,6 +103,17 @@ export const WorkTimes = () => {
   };
 
   if (isCheckingLogin) return null;
+
+  // ここでローディング中はスピナーだけ表示
+  if (isLoading) {
+    return (
+      <Layout title="勤務一覧">
+        <Box textAlign="center">
+          <Spinner size="sm" />
+        </Box>
+      </Layout>
+    );
+  }
 
   return (
     <Layout title="勤務一覧">
@@ -181,13 +195,7 @@ export const WorkTimes = () => {
         </MainButton>
       </Stack>
 
-      {isLoading ? (
-        <Box textAlign="center">
-          <Spinner size="sm" />
-        </Box>
-      ) : (
-        <MainButton onClick={() => handleLogout()}>ログアウトする</MainButton>
-      )}
+      <MainButton onClick={() => handleLogout()}>ログアウトする</MainButton>
     </Layout>
   );
 };
