@@ -4,7 +4,7 @@ export const useSetTime = (
   setClockIn: Dispatch<SetStateAction<string>>,
   setClockOut: Dispatch<SetStateAction<string>>,
   setBreakDurationHours: Dispatch<SetStateAction<string>>,
-  setBreakDurationMinutes: Dispatch<SetStateAction<string>>
+  setBreakDurationMinutes: Dispatch<SetStateAction<string>>,
 ) => {
   const setClearTime = () => {
     setClockIn("");

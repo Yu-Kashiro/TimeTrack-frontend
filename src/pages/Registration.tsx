@@ -39,7 +39,7 @@ export const Registration = () => {
     setClockIn,
     setClockOut,
     setBreakDurationHours,
-    setBreakDurationMinutes
+    setBreakDurationMinutes,
   );
 
   const createWorkTimeEvent = async ({
@@ -50,7 +50,6 @@ export const Registration = () => {
     note,
     isPaidHoliday,
   }: RegistrationFormProps) => {
-
     const validationResult = validateWorkTime({
       clockIn: clockIn,
       clockOut: clockOut,

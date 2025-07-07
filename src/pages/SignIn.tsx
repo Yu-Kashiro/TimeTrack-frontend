@@ -78,7 +78,6 @@ export const SignIn = () => {
             サーバー起動のため、ログインボタンを押したあと、少し時間がかかる場合があります。
           </Text>
         </Box>
-
       </Layout>
     </form>
   );

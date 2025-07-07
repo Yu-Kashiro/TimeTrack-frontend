@@ -21,7 +21,11 @@ export const useSignUpForm = () => {
     setIsSubmittingSignUp(true);
     try {
       const res = await signUp(data);
-      Cookies.set("_access_token", res.headers["access-token"], secureCookieOptions);
+      Cookies.set(
+        "_access_token",
+        res.headers["access-token"],
+        secureCookieOptions,
+      );
       Cookies.set("_client", res.headers["client"], secureCookieOptions);
       Cookies.set("_uid", res.headers["uid"], secureCookieOptions);
       navigate("/work_times/registration");
@@ -29,10 +33,17 @@ export const useSignUpForm = () => {
       console.log(e);
       setIsSubmittingSignUp(false);
       setErrorMessage(
-        "新規登録に失敗しました。氏名、メールアドレス、パスワードを確認してください。"
+        "新規登録に失敗しました。氏名、メールアドレス、パスワードを確認してください。",
       );
     }
   });
 
-  return { errorMessage, register, errors, isValid, onSubmit, isSubmittingSignUp };
+  return {
+    errorMessage,
+    register,
+    errors,
+    isValid,
+    onSubmit,
+    isSubmittingSignUp,
+  };
 };
