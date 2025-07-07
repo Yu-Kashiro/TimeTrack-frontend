@@ -4,9 +4,7 @@ import { Layout } from "@/lib/components/Layout";
 export const NotFound = () => {
   return (
     <Layout title="404エラー">
-      <Box textAlign="center">
-        ページが見つかりませんでした。
-      </Box>
+      <Box textAlign="center">ページが見つかりませんでした。</Box>
     </Layout>
   );
 };

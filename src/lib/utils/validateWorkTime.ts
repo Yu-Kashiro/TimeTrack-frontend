@@ -12,7 +12,7 @@ type ValidationResult = {
 };
 
 export const validateWorkTime = (
-  data: WorkTimeValidationData
+  data: WorkTimeValidationData,
 ): ValidationResult => {
   const errors: string[] = [];
 

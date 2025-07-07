@@ -8,12 +8,7 @@ export const DeleteButton = ({ onClick }: DeleteButtonProps) => {
   return (
     <Dialog.Root role="alertdialog" placement="center">
       <Dialog.Trigger asChild>
-        <Button
-          colorPalette="red"
-          variant="subtle"
-          size="xl"
-          color="black"
-        >
+        <Button colorPalette="red" variant="subtle" size="xl" color="black">
           削除する
         </Button>
       </Dialog.Trigger>
@@ -37,7 +32,9 @@ export const DeleteButton = ({ onClick }: DeleteButtonProps) => {
             </Dialog.Body>
             <Dialog.Footer>
               <Dialog.ActionTrigger asChild>
-                <Button variant="outline" color="black" borderColor="gray.300">キャンセル</Button>
+                <Button variant="outline" color="black" borderColor="gray.300">
+                  キャンセル
+                </Button>
               </Dialog.ActionTrigger>
               <Button colorPalette="red" onClick={onClick}>
                 削除する

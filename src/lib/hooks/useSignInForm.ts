@@ -24,7 +24,7 @@ export const useSignInForm = () => {
       Cookies.set(
         "_access_token",
         res.headers["access-token"],
-        secureCookieOptions
+        secureCookieOptions,
       );
       Cookies.set("_client", res.headers["client"], secureCookieOptions);
       Cookies.set("_uid", res.headers["uid"], secureCookieOptions);
@@ -33,10 +33,17 @@ export const useSignInForm = () => {
       console.log(e);
       setIsSubmittingLogin(false);
       setErrorMessage(
-        "ログインに失敗しました。メールアドレスとパスワードを確認してください。"
+        "ログインに失敗しました。メールアドレスとパスワードを確認してください。",
       );
     }
   });
 
-  return { errorMessage, register, errors, isValid, onSubmit, isSubmittingLogin };
+  return {
+    errorMessage,
+    register,
+    errors,
+    isValid,
+    onSubmit,
+    isSubmittingLogin,
+  };
 };

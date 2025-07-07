@@ -53,7 +53,7 @@ export const WorkTimes = () => {
     const now = new Date();
     return `${now.getFullYear()}年${String(now.getMonth() + 1).padStart(
       2,
-      "0"
+      "0",
     )}月`;
   });
 
@@ -69,7 +69,7 @@ export const WorkTimes = () => {
   workTimesItems.forEach((item) => {
     const date = new Date(item.workDate);
     const yearAndMonthStr = `${date.getFullYear()}年${String(
-      date.getMonth() + 1
+      date.getMonth() + 1,
     ).padStart(2, "0")}月`;
     yearAndMonthsSet.add(yearAndMonthStr);
   });

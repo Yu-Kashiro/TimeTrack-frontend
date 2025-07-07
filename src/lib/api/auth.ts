@@ -29,5 +29,3 @@ export const getUser = () => {
 
   return client.get("/auth/sessions", { headers });
 };
-
-

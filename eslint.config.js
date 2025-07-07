@@ -37,7 +37,7 @@ export default [
         ],
         "@eslint-react/no-missing-key": "warn",
       },
-    }
+    },
   ),
   eslintConfigPrettier,
 ];

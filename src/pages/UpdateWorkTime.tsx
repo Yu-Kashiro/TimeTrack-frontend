@@ -42,7 +42,7 @@ export const UpdateWorkTime = () => {
     setClockIn,
     setClockOut,
     setBreakDurationHours,
-    setBreakDurationMinutes
+    setBreakDurationMinutes,
   );
 
   const [beforeUpdateWorkTime, setBeforeUpdateWorkTime] = useState<{
@@ -85,7 +85,7 @@ export const UpdateWorkTime = () => {
             const clockInValue = isoStringToHourAndMinutes(data.clockIn);
             const clockOutValue = isoStringToHourAndMinutes(data.clockOut);
             const { hourPart, minutePart } = minutesToHourPartAndMinutesPart(
-              data.breakDurationMinute
+              data.breakDurationMinute,
             );
             const breakHours = hourPart || "01";
             const breakMinutes = minutePart || "00";
@@ -277,10 +277,10 @@ export const UpdateWorkTime = () => {
                   setClockIn(beforeUpdateWorkTime.clockIn);
                   setClockOut(beforeUpdateWorkTime.clockOut);
                   setBreakDurationHours(
-                    beforeUpdateWorkTime.breakDurationHours
+                    beforeUpdateWorkTime.breakDurationHours,
                   );
                   setBreakDurationMinutes(
-                    beforeUpdateWorkTime.breakDurationMinutes
+                    beforeUpdateWorkTime.breakDurationMinutes,
                   );
                 }
               }

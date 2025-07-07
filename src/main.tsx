@@ -15,5 +15,5 @@ createRoot(document.getElementById("root")!).render(
         </LightMode>
       </BrowserRouter>
     </Provider>
-  </StrictMode>
+  </StrictMode>,
 );
