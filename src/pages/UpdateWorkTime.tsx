@@ -68,7 +68,10 @@ export const UpdateWorkTime = () => {
 
           if (data.isPaidHoliday) {
             // 有給休暇だった場合、時間を空にする
-            setClearTime();
+            setClockIn("");
+            setClockOut("");
+            setBreakDurationHours("");
+            setBreakDurationMinutes("");
             // デフォルト値を設定
             setBeforeUpdateWorkTime({
               clockIn: "08:30",
@@ -112,7 +115,7 @@ export const UpdateWorkTime = () => {
     };
 
     fetchBeforeUpdateWorkTime();
-  }, [setClearTime, workTimeId]);
+  }, [workTimeId]);
 
   const updateWorkTimeEvent = async ({
     workDate,
