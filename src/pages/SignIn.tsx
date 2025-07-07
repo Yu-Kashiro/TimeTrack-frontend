@@ -75,7 +75,7 @@ export const SignIn = () => {
           borderLeftColor="blue.400"
         >
           <Text fontSize="sm" textAlign="center">
-            サーバー起動のため、ログインボタンを押すと、少し時間がかかる場合があります。
+            サーバー起動のため、ログインボタンを押したあと、少し時間がかかる場合があります。
           </Text>
         </Box>
 
