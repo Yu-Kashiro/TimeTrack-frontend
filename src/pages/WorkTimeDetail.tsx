@@ -32,7 +32,7 @@ export const WorkTimeDetail = () => {
       navigate("/work_times");
     } catch (e) {
       setIsLoading(false);
-      console.error("エラーが発生しました:", e);
+      console.error("削除エラー:", e);
     }
   };
 
@@ -45,7 +45,7 @@ export const WorkTimeDetail = () => {
           setWorkTimesItem(fetchWorkTimes.data);
         }
       } catch (e) {
-        console.error("エラーが発生しました:", e);
+        console.error("勤務時間データの取得エラー:", e);
       }
     };
     initialize();

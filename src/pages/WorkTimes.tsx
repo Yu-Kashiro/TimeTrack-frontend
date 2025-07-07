@@ -41,7 +41,7 @@ export const WorkTimes = () => {
           setWorkTimesItems(fetchWorkTimesAll.data);
         }
       } catch (e) {
-        console.error("エラーが発生しました:", e);
+        console.error("勤務時間一覧の取得エラー:", e);
       } finally {
         setIsLoading(false);
       }
