@@ -49,7 +49,7 @@ export const SignUp = () => {
         </Field.Root>
 
         <Field.Root invalid={!!errors.password}>
-          <Field.Label>パスワード</Field.Label>
+          <Field.Label>パスワード(6文字以上)</Field.Label>
           <PasswordInput
             {...register("password", { required: "パスワードは必須です" })}
           />
