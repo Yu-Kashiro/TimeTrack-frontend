@@ -128,7 +128,7 @@ export const WorkTimes = () => {
           <Select.HiddenSelect />
           <Select.Control>
             <Select.Trigger>
-              <Select.ValueText />
+              <Select.ValueText placeholder="年月を選択してください" />
             </Select.Trigger>
             <Select.IndicatorGroup>
               <Select.Indicator />
@@ -173,29 +173,39 @@ export const WorkTimes = () => {
           </Table.Header>
 
           <Table.Body>
-            {filteredItems.map((workTimesItem) => (
-              <WorkTimesRow
-                key={workTimesItem.id}
-                id={workTimesItem.id}
-                workDate={toJapaneseMonthDay(workTimesItem.workDate)}
-                workHoursAndMinute={
-                  workTimesItem.isPaidHoliday
-                    ? "有給"
-                    : minutesToHoursAndMinutes(workTimesItem.workMinute)
-                }
-              />
-            ))}
+            {filteredItems.length === 0 ? (
+              <Table.Row>
+                <Table.Cell colSpan={3} textAlign="center" p="8">
+                  選択した年月の勤務実績はありません
+                </Table.Cell>
+              </Table.Row>
+            ) : (
+              filteredItems.map((workTimesItem) => (
+                <WorkTimesRow
+                  key={workTimesItem.id}
+                  id={workTimesItem.id}
+                  workDate={toJapaneseMonthDay(workTimesItem.workDate)}
+                  workHoursAndMinute={
+                    workTimesItem.isPaidHoliday
+                      ? "有給"
+                      : minutesToHoursAndMinutes(workTimesItem.workMinute)
+                  }
+                />
+              ))
+            )}
           </Table.Body>
 
-          <Table.Footer>
-            <Table.Row>
-              <Table.Cell textAlign="center">合計</Table.Cell>
-              <Table.Cell textAlign="center">
-                {minutesToHoursAndMinutes(totalWorkMinutes())}
-              </Table.Cell>
-              <Table.Cell textAlign="center">ー</Table.Cell>
-            </Table.Row>
-          </Table.Footer>
+          {filteredItems.length > 0 && (
+            <Table.Footer>
+              <Table.Row>
+                <Table.Cell textAlign="center">合計</Table.Cell>
+                <Table.Cell textAlign="center">
+                  {minutesToHoursAndMinutes(totalWorkMinutes())}
+                </Table.Cell>
+                <Table.Cell textAlign="center">ー</Table.Cell>
+              </Table.Row>
+            </Table.Footer>
+          )}
         </Table.Root>
 
         <MainButton
