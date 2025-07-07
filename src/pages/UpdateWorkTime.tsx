@@ -1,11 +1,15 @@
 import { getWorkTimes, updateWorkTime } from "@/lib/api/workTimes";
+import { BreakHourOptions } from "@/lib/components/breakHourOptions";
+import { BreakMinuteOptions } from "@/lib/components/breakMinuteOptions";
 import { Layout } from "@/lib/components/Layout";
 import { MainButton } from "@/lib/components/MainButton";
 import { useLoginCheck } from "@/lib/hooks/useLoginCheck";
+import { useSetTime } from "@/lib/hooks/useSetTime";
 import { getBreakDuration } from "@/lib/utils/getBreakDuration";
 import { isoStringToHourAndMinutes } from "@/lib/utils/isoStringToHourAndMinutes";
 import { minutesToHourPartAndMinutesPart } from "@/lib/utils/minutesToHourPartAndMinutesPart";
 import { toJapaneseYearMonthDay } from "@/lib/utils/toJapaneseYearMonthDay";
+import { validateWorkTime } from "@/lib/utils/validateWorkTime";
 import type { RegistrationFormProps } from "@/types/registration-form";
 import {
   Box,
@@ -16,12 +20,13 @@ import {
   Spinner,
   Switch,
 } from "@chakra-ui/react";
+import type { AxiosError } from "axios";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 
 export const UpdateWorkTime = () => {
   const [isCheckingLogin, setIsCheckingLogin] = useState(true);
-
+  const [isLoading, setIsLoading] = useState(false);
   const [workDate, setWorkDate] = useState("");
   const [clockIn, setClockIn] = useState("");
   const [clockOut, setClockOut] = useState("");
@@ -29,8 +34,16 @@ export const UpdateWorkTime = () => {
   const [breakDurationMinutes, setBreakDurationMinutes] = useState("");
   const [note, setNote] = useState("");
   const [isPaidHoliday, setIsPaidHoliday] = useState(false);
+  const [errorMessages, setErrorMessages] = useState<string[]>([]);
+  const navigate = useNavigate();
+  const { workTimeId } = useParams();
 
-  const [isLoading, setIsLoading] = useState(false);
+  const { setClearTime, setDefaultTime } = useSetTime(
+    setClockIn,
+    setClockOut,
+    setBreakDurationHours,
+    setBreakDurationMinutes
+  );
 
   const [beforeUpdateWorkTime, setBeforeUpdateWorkTime] = useState<{
     clockIn: string;
@@ -39,9 +52,6 @@ export const UpdateWorkTime = () => {
     breakDurationMinutes: string;
     isPaidHoliday: boolean;
   } | null>(null);
-
-  const navigate = useNavigate();
-  const { workTimeId } = useParams();
 
   useEffect(() => {
     const fetchBeforeUpdateWorkTime = async () => {
@@ -52,40 +62,21 @@ export const UpdateWorkTime = () => {
         if (response && response.data) {
           const data = response.data;
 
-          // 基本情報の設定
           setWorkDate(data.workDate);
           setNote(data.note || "");
           setIsPaidHoliday(data.isPaidHoliday || false);
 
           if (data.isPaidHoliday) {
-            // 有給休暇の場合は空にする
-            setClockIn("");
-            setClockOut("");
-            setBreakDurationHours("");
-            setBreakDurationMinutes("");
-            // 有給休暇でも元の値は保存しておく（復元用）
-            if (data.clockIn && data.clockOut) {
-              const originalClockIn = isoStringToHourAndMinutes(data.clockIn);
-              const originalClockOut = isoStringToHourAndMinutes(data.clockOut);
-              const breakDuration = data.breakDuration || "01:00";
-              const [hours, minutes] = breakDuration.split(":");
-              setBeforeUpdateWorkTime({
-                clockIn: originalClockIn,
-                clockOut: originalClockOut,
-                breakDurationHours: hours || "01",
-                breakDurationMinutes: minutes || "00",
-                isPaidHoliday: true,
-              });
-            } else {
-              // 有給休暇だが元の勤務時間データがない場合、デフォルト値を設定
-              setBeforeUpdateWorkTime({
-                clockIn: "08:30",
-                clockOut: "17:15",
-                breakDurationHours: "01",
-                breakDurationMinutes: "00",
-                isPaidHoliday: true,
-              });
-            }
+            // 有給休暇だった場合、時間を空にする
+            setClearTime();
+            // デフォルト値を設定
+            setBeforeUpdateWorkTime({
+              clockIn: "08:30",
+              clockOut: "17:15",
+              breakDurationHours: "01",
+              breakDurationMinutes: "00",
+              isPaidHoliday: true,
+            });
           } else {
             // 通常勤務の場合
             const clockInValue = isoStringToHourAndMinutes(data.clockIn);
@@ -102,7 +93,7 @@ export const UpdateWorkTime = () => {
             setBreakDurationHours(breakHours);
             setBreakDurationMinutes(breakMinutes);
 
-            // 復元用の値も設定
+            // 復元用の値を設定
             setBeforeUpdateWorkTime({
               clockIn: clockInValue,
               clockOut: clockOutValue,
@@ -113,12 +104,15 @@ export const UpdateWorkTime = () => {
           }
         }
       } catch (e) {
-        console.error("エラーが発生しました:", e);
+        console.error("勤務時間データの取得エラー:", e);
+        setErrorMessages([
+          "勤務時間データの取得に失敗しました。再度お試しください。",
+        ]);
       }
     };
 
     fetchBeforeUpdateWorkTime();
-  }, [workTimeId]);
+  }, [setClearTime, workTimeId]);
 
   const updateWorkTimeEvent = async ({
     workDate,
@@ -128,9 +122,25 @@ export const UpdateWorkTime = () => {
     note,
     isPaidHoliday,
   }: RegistrationFormProps) => {
+    // バリデーション実行
+    const validationResult = validateWorkTime({
+      clockIn: clockIn,
+      clockOut: clockOut,
+      breakDurationHours,
+      breakDurationMinutes,
+      isPaidHoliday: isPaidHoliday,
+    });
+
+    if (!validationResult.isValid) {
+      setErrorMessages(validationResult.errors);
+      return;
+    }
+
+    setErrorMessages([]);
+    setIsLoading(true);
+
     try {
       if (!workTimeId) return;
-      setIsLoading(true);
       await updateWorkTime(workTimeId, {
         work_time: {
           work_date: workDate,
@@ -144,7 +154,16 @@ export const UpdateWorkTime = () => {
       navigate(`/work_times/${workTimeId}`);
     } catch (e) {
       setIsLoading(false);
-      console.error("エラーが発生しました。", e);
+      const err = e as AxiosError;
+      if (
+        err.response?.data &&
+        typeof err.response.data === "object" &&
+        "errors" in err.response.data
+      ) {
+        setErrorMessages((err.response.data as { errors: string[] }).errors);
+      } else {
+        setErrorMessages(["予期しないエラーが発生しました。"]);
+      }
     }
   };
 
@@ -207,19 +226,13 @@ export const UpdateWorkTime = () => {
                 value={breakDurationHours}
                 onChange={(e) => setBreakDurationHours(e.target.value)}
               >
-                <option value="00">0時間</option>
-                <option value="01">1時間</option>
-                <option value="02">2時間</option>
-                <option value="03">3時間</option>
+                <BreakHourOptions />
               </NativeSelect.Field>
               <NativeSelect.Field
                 value={breakDurationMinutes}
                 onChange={(e) => setBreakDurationMinutes(e.target.value)}
               >
-                <option value="00">0分</option>
-                <option value="15">15分</option>
-                <option value="30">30分</option>
-                <option value="45">45分</option>
+                <BreakMinuteOptions />
               </NativeSelect.Field>
               <NativeSelect.Indicator />
             </NativeSelect.Root>
@@ -249,19 +262,13 @@ export const UpdateWorkTime = () => {
             setIsPaidHoliday(e.checked);
             if (e.checked) {
               // 有給休暇に切り替える場合、時間関連の入力をクリア。
-              setClockIn("");
-              setClockOut("");
-              setBreakDurationHours("");
-              setBreakDurationMinutes("");
+              setClearTime();
             } else {
               // 有給休暇のチェックが外れた場合
               if (beforeUpdateWorkTime) {
                 if (beforeUpdateWorkTime.isPaidHoliday) {
                   // 元データが有給休暇の場合は、デフォルト設定
-                  setClockIn("08:30");
-                  setClockOut("17:15");
-                  setBreakDurationHours("01");
-                  setBreakDurationMinutes("00");
+                  setDefaultTime();
                 } else {
                   // 元データに勤務時間がある場合、元の値を復元
                   setClockIn(beforeUpdateWorkTime.clockIn);
@@ -308,6 +315,14 @@ export const UpdateWorkTime = () => {
         >
           修正する
         </MainButton>
+      )}
+
+      {errorMessages.length > 0 && (
+        <Box color="red" textAlign={"center"}>
+          {errorMessages.map((msg, index) => (
+            <Box key={index}>{msg}</Box>
+          ))}
+        </Box>
       )}
 
       <MainButton onClick={() => navigate("/work_times")}>

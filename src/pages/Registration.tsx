@@ -17,10 +17,14 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { todayDateString } from "@/lib/utils/todayDateString";
 import { getBreakDuration } from "@/lib/utils/getBreakDuration";
+import { validateWorkTime } from "@/lib/utils/validateWorkTime";
+import { useSetTime } from "@/lib/hooks/useSetTime";
+import { BreakHourOptions } from "@/lib/components/breakHourOptions";
+import { BreakMinuteOptions } from "@/lib/components/breakMinuteOptions";
 
 export const Registration = () => {
   const [isCheckingLogin, setIsCheckingLogin] = useState(true);
-
+  const [isLoading, setIsLoading] = useState(false);
   const [workDate, setWorkDate] = useState(todayDateString);
   const [clockIn, setClockIn] = useState("08:30");
   const [clockOut, setClockOut] = useState("17:15");
@@ -31,19 +35,47 @@ export const Registration = () => {
   const [errorMessages, setErrorMessages] = useState<string[]>([]);
   const navigate = useNavigate();
 
-  const [isLoading, setIsLoading] = useState(false);
+  const { setClearTime, setDefaultTime } = useSetTime(
+    setClockIn,
+    setClockOut,
+    setBreakDurationHours,
+    setBreakDurationMinutes
+  );
 
-  const createWorkTimeEvent = async (event: RegistrationFormProps) => {
+  const createWorkTimeEvent = async ({
+    workDate,
+    clockIn,
+    clockOut,
+    breakDuration,
+    note,
+    isPaidHoliday,
+  }: RegistrationFormProps) => {
+
+    const validationResult = validateWorkTime({
+      clockIn: clockIn,
+      clockOut: clockOut,
+      breakDurationHours,
+      breakDurationMinutes,
+      isPaidHoliday: isPaidHoliday,
+    });
+
+    if (!validationResult.isValid) {
+      setErrorMessages(validationResult.errors);
+      return;
+    }
+
+    setErrorMessages([]);
     setIsLoading(true);
+
     try {
       await createWorkTime({
         work_time: {
-          work_date: event.workDate,
-          clock_in: event.isPaidHoliday ? null : event.clockIn,
-          clock_out: event.isPaidHoliday ? null : event.clockOut,
-          break_duration: event.isPaidHoliday ? null : event.breakDuration,
-          note: event.note,
-          is_paid_holiday: event.isPaidHoliday,
+          work_date: workDate,
+          clock_in: isPaidHoliday ? null : clockIn,
+          clock_out: isPaidHoliday ? null : clockOut,
+          break_duration: isPaidHoliday ? null : breakDuration,
+          note: note,
+          is_paid_holiday: isPaidHoliday,
         },
       });
       navigate("/work_times");
@@ -126,19 +158,13 @@ export const Registration = () => {
                 value={breakDurationHours}
                 onChange={(e) => setBreakDurationHours(e.target.value)}
               >
-                <option value="00">0時間</option>
-                <option value="01">1時間</option>
-                <option value="02">2時間</option>
-                <option value="03">3時間</option>
+                <BreakHourOptions />
               </NativeSelect.Field>
               <NativeSelect.Field
                 value={breakDurationMinutes}
                 onChange={(e) => setBreakDurationMinutes(e.target.value)}
               >
-                <option value="00">0分</option>
-                <option value="15">15分</option>
-                <option value="30">30分</option>
-                <option value="45">45分</option>
+                <BreakMinuteOptions />
               </NativeSelect.Field>
               <NativeSelect.Indicator />
             </NativeSelect.Root>
@@ -167,15 +193,9 @@ export const Registration = () => {
           onCheckedChange={(e) => {
             setIsPaidHoliday(e.checked);
             if (e.checked) {
-              setClockIn("");
-              setClockOut("");
-              setBreakDurationHours("");
-              setBreakDurationMinutes("");
+              setClearTime();
             } else {
-              setClockIn("08:30");
-              setClockOut("17:15");
-              setBreakDurationHours("01");
-              setBreakDurationMinutes("00");
+              setDefaultTime();
             }
           }}
         >
@@ -214,8 +234,8 @@ export const Registration = () => {
 
       {errorMessages.length > 0 && (
         <Box color="red" textAlign={"center"}>
-          {errorMessages.map((msg, idx) => (
-            <Box key={idx}>{msg}</Box>
+          {errorMessages.map((msg, index) => (
+            <Box key={index}>{msg}</Box>
           ))}
         </Box>
       )}
