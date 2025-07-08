@@ -10,7 +10,6 @@ import { useLoginCheck } from "@/lib/hooks/useLoginCheck";
 import { useState } from "react";
 import { useSignUpForm } from "@/lib/hooks/useSignUpForm";
 import { Spinner } from "@chakra-ui/react/spinner";
-import { Text } from "@chakra-ui/react";
 
 export const SignUp = () => {
   const [isCheckingLogin, setIsCheckingLogin] = useState(true);
@@ -70,19 +69,6 @@ export const SignUp = () => {
 
         <Box textAlign="center">
           <Link to="../signin">ログインはこちら</Link>
-        </Box>
-
-        <Box
-          mt={10}
-          p={3}
-          bg="blue.50"
-          borderRadius="md"
-          borderLeft="4px solid"
-          borderLeftColor="blue.400"
-        >
-          <Text fontSize="sm" textAlign="center">
-            サーバー起動のため、登録ボタンを押したあと、少し時間がかかる場合があります。
-          </Text>
         </Box>
       </Layout>
     </form>
