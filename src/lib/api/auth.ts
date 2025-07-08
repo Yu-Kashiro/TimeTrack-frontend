@@ -27,5 +27,11 @@ export const getUser = () => {
   const headers = getAuthHeaders();
   if (!headers) return;
 
-  return client.get("/auth/sessions", { headers });
+  return client.get("/auth/login_status", { headers });
+};
+
+// ゲストログイン用
+export const guestSignIn = () => {
+  console.log("guestSignInの実行");
+  return client.post("/auth/guest_user");
 };
