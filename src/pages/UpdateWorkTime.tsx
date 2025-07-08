@@ -4,7 +4,7 @@ import { BreakMinuteOptions } from "@/lib/components/breakMinuteOptions";
 import { Layout } from "@/lib/components/Layout";
 import { MainButton } from "@/lib/components/MainButton";
 import { useLoginCheck } from "@/lib/hooks/useLoginCheck";
-import { useSetTime } from "@/lib/hooks/useSetTime";
+import { setTime } from "@/lib/utils/setTime";
 import { getBreakDuration } from "@/lib/utils/getBreakDuration";
 import { isoStringToHourAndMinutes } from "@/lib/utils/isoStringToHourAndMinutes";
 import { minutesToHourPartAndMinutesPart } from "@/lib/utils/minutesToHourPartAndMinutesPart";
@@ -38,7 +38,7 @@ export const UpdateWorkTime = () => {
   const navigate = useNavigate();
   const { workTimeId } = useParams();
 
-  const { setClearTime, setDefaultTime } = useSetTime(
+  const { setClearTime, setDefaultTime } = setTime(
     setClockIn,
     setClockOut,
     setBreakDurationHours,
