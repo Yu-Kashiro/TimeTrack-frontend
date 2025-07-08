@@ -10,6 +10,7 @@ import { useLoginCheck } from "@/lib/hooks/useLoginCheck";
 import { useSignInForm } from "@/lib/hooks/useSignInForm";
 import { useState } from "react";
 import { Spinner } from "@chakra-ui/react/spinner";
+import { GuestLoginButton } from "@/lib/components/GuestLoginButton";
 
 export const SignIn = () => {
   const [isCheckingLogin, setIsCheckingLogin] = useState(true);
@@ -60,6 +61,8 @@ export const SignIn = () => {
         )}
 
         <ErrorMessage errorMessage={errorMessage} />
+
+        <GuestLoginButton />
 
         <Box textAlign="center">
           <Link to="../signup">ユーザー登録はこちら</Link>
