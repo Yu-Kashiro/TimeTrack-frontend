@@ -21,8 +21,8 @@ import {
 import type { AxiosError } from "axios";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { BreakHourOptions } from "@/lib/components/BreakHourOptions";
-import { BreakMinuteOptions } from "@/lib/components/BreakMinuteOptions";
+import { BreakHourOptions } from "@/lib/components/BreakHourOptions.tsx";
+import { BreakMinuteOptions } from "@/lib/components/BreakMinuteOptions.tsx";
 
 export const UpdateWorkTime = () => {
   const [isCheckingLogin, setIsCheckingLogin] = useState(true);
