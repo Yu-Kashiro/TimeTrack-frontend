@@ -1,6 +1,5 @@
 import { getWorkTimes, updateWorkTime } from "@/lib/api/workTimes";
 import { BreakHourOptions } from "@/lib/components/BreakHourOptions";
-import { BreakMinuteOptions } from "@/lib/components/breakMinuteOptions";
 import { Layout } from "@/lib/components/Layout";
 import { MainButton } from "@/lib/components/MainButton";
 import { useLoginCheck } from "@/lib/hooks/useLoginCheck";
@@ -23,6 +22,7 @@ import {
 import type { AxiosError } from "axios";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import { BreakMinuteOptions } from "@/lib/components/BreakMinuteOptions";
 
 export const UpdateWorkTime = () => {
   const [isCheckingLogin, setIsCheckingLogin] = useState(true);
