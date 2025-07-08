@@ -81,7 +81,7 @@ export const SignUp = () => {
           borderLeftColor="blue.400"
         >
           <Text fontSize="sm" textAlign="center">
-            サーバー起動のため、登録ボタンを押したあと、少し時間がかかる場合があります。
+            登録ボタンを押したあと、サーバー起動のため、少し時間がかかる場合があります。
           </Text>
         </Box>
       </Layout>
