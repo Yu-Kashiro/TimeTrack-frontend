@@ -1,5 +1,5 @@
 import { getWorkTimes, updateWorkTime } from "@/lib/api/workTimes";
-import { BreakHourOptions } from "@/lib/components/breakHourOptions";
+import { BreakHourOptions } from "@/lib/components/BreakHourOptions";
 import { BreakMinuteOptions } from "@/lib/components/breakMinuteOptions";
 import { Layout } from "@/lib/components/Layout";
 import { MainButton } from "@/lib/components/MainButton";
