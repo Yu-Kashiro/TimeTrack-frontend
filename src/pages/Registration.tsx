@@ -18,7 +18,7 @@ import { useNavigate } from "react-router-dom";
 import { todayDateString } from "@/lib/utils/todayDateString";
 import { getBreakDuration } from "@/lib/utils/getBreakDuration";
 import { validateWorkTime } from "@/lib/utils/validateWorkTime";
-import { useSetTime } from "@/lib/hooks/useSetTime";
+import { setTime } from "@/lib/utils/setTime";
 import { BreakHourOptions } from "@/lib/components/breakHourOptions";
 import { BreakMinuteOptions } from "@/lib/components/breakMinuteOptions";
 
@@ -35,7 +35,7 @@ export const Registration = () => {
   const [errorMessages, setErrorMessages] = useState<string[]>([]);
   const navigate = useNavigate();
 
-  const { setClearTime, setDefaultTime } = useSetTime(
+  const { setClearTime, setDefaultTime } = setTime(
     setClockIn,
     setClockOut,
     setBreakDurationHours,

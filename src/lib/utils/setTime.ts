@@ -1,6 +1,6 @@
 import type { Dispatch, SetStateAction } from "react";
 
-export const useSetTime = (
+export const setTime = (
   setClockIn: Dispatch<SetStateAction<string>>,
   setClockOut: Dispatch<SetStateAction<string>>,
   setBreakDurationHours: Dispatch<SetStateAction<string>>,
