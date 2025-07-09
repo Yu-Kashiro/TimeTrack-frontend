@@ -32,6 +32,5 @@ export const getUser = () => {
 
 // ゲストログイン用
 export const guestSignIn = () => {
-  console.log("guestSignInの実行");
   return client.post("/auth/guest_user");
 };
