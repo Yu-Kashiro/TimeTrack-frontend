@@ -6,14 +6,15 @@ import { Box } from "@chakra-ui/react/box";
 import { MainButton } from "@/lib/components/MainButton";
 import { Layout } from "@/lib/components/Layout";
 import { ErrorMessage } from "@/lib/components/ErrorMessage";
+import { GuestLoginButton } from "@/lib/components/GuestLoginButton";
 import { useLoginCheck } from "@/lib/hooks/useLoginCheck";
 import { useSignInForm } from "@/lib/hooks/useSignInForm";
 import { useState } from "react";
 import { Spinner } from "@chakra-ui/react/spinner";
-import { GuestLoginButton } from "@/lib/components/GuestLoginButton";
 
 export const SignIn = () => {
   const [isCheckingLogin, setIsCheckingLogin] = useState(true);
+
   const {
     errorMessage,
     register,
