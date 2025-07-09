@@ -1,19 +1,18 @@
-import { guestSignIn } from "@/lib/api/auth";
+import { Box } from "@chakra-ui/react/box";
 import { Button } from "@chakra-ui/react/button";
-import { useNavigate } from "react-router-dom";
+import { Spinner } from "@chakra-ui/react/spinner";
+import { useGuestLogin } from "@/lib/hooks/useGuestLogin";
 
 export const GuestLoginButton = () => {
-  const navigate = useNavigate();
+  const { isLoading, handleGuestLogin } = useGuestLogin();
 
-  const handleGuestLogin = async () => {
-    console.log("ゲストログインの実行");
-    try {
-      await guestSignIn();
-      navigate("/work_times");
-    } catch (e) {
-      console.error("ゲストログインエラー:", e);
-    }
-  };
+  if (isLoading) {
+    return (
+      <Box textAlign="center">
+        <Spinner size="sm" />
+      </Box>
+    );
+  }
 
   return (
     <Button
