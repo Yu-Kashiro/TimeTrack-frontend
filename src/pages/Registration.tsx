@@ -35,7 +35,6 @@ export const Registration = () => {
   const [errorMessages, setErrorMessages] = useState<string[]>([]);
   const navigate = useNavigate();
 
-
   const { setClearTime, setDefaultTime } = setTime(
     setClockIn,
     setClockOut,
