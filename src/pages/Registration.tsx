@@ -19,8 +19,8 @@ import { todayDateString } from "@/lib/utils/todayDateString";
 import { getBreakDuration } from "@/lib/utils/getBreakDuration";
 import { validateWorkTime } from "@/lib/utils/validateWorkTime";
 import { setTime } from "@/lib/utils/setTime";
-import { BreakHourOptions } from "@/lib/components/breakHourOptions";
-import { BreakMinuteOptions } from "@/lib/components/breakMinuteOptions";
+import { BreakHourOptions } from "@/lib/components/BreakHourOptions";
+import { BreakMinuteOptions } from "@/lib/components/BreakMinuteOptions";
 
 export const Registration = () => {
   const [isCheckingLogin, setIsCheckingLogin] = useState(true);
