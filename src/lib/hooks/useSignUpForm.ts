@@ -28,7 +28,7 @@ export const useSignUpForm = () => {
       );
       Cookies.set("_client", res.headers["client"], secureCookieOptions);
       Cookies.set("_uid", res.headers["uid"], secureCookieOptions);
-      navigate("/work_times/registration");
+      navigate("/work_times");
     } catch (e) {
       console.log(e);
       setIsSubmittingSignUp(false);
