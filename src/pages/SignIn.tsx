@@ -1,5 +1,5 @@
 import { Input } from "@chakra-ui/react/input";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Field } from "@chakra-ui/react/field";
 import { PasswordInput } from "@/lib/components/defaultChakraUIComponents/password-input";
 import { Box } from "@chakra-ui/react/box";
@@ -10,10 +10,14 @@ import { useLoginCheck } from "@/lib/hooks/useLoginCheck";
 import { useSignInForm } from "@/lib/hooks/useSignInForm";
 import { useState } from "react";
 import { Spinner } from "@chakra-ui/react/spinner";
-import { GuestLoginButton } from "@/lib/components/GuestLoginButton";
+import { guestSignIn } from "@/lib/api/auth";
+import { Button } from "@chakra-ui/react/button";
 
 export const SignIn = () => {
   const [isCheckingLogin, setIsCheckingLogin] = useState(true);
+  const navigate = useNavigate();
+  const [isLoading, setIsLoading] = useState(false);
+
   const {
     errorMessage,
     register,
@@ -22,6 +26,17 @@ export const SignIn = () => {
     onSubmit,
     isSubmittingLogin,
   } = useSignInForm();
+
+  const handleGuestLogin = async () => {
+    setIsLoading(true);
+    try {
+      await guestSignIn();
+      navigate("/work_times");
+    } catch (e) {
+      setIsLoading(false);
+      console.error("ゲストログインエラー:", e);
+    }
+  };
 
   useLoginCheck({
     redirectIf: "loggedIn",
@@ -62,7 +77,21 @@ export const SignIn = () => {
 
         <ErrorMessage errorMessage={errorMessage} />
 
-        <GuestLoginButton />
+        {isLoading ? (
+          <Box textAlign="center">
+            <Spinner size="sm" />
+          </Box>
+        ) : (
+          <Button
+            variant="subtle"
+            size="xl"
+            type="button"
+            mt="2"
+            onClick={handleGuestLogin}
+          >
+            ゲストログイン
+          </Button>
+        )}
 
         <Box textAlign="center">
           <Link to="../signup">ユーザー登録はこちら</Link>
