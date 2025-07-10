@@ -1,13 +1,11 @@
 import { useState } from "react";
 import { useForm } from "react-hook-form";
-import { useNavigate } from "react-router-dom";
 import { signUp } from "../api/auth";
 import Cookies from "js-cookie";
 import { secureCookieOptions } from "../utils/secureCookieOptions";
 import type { SignUpFormValues } from "@/types/signUpFormValues";
 
 export const useSignUpForm = () => {
-  const navigate = useNavigate();
   const [errorMessage, setErrorMessage] = useState("");
   const [isSubmittingSignUp, setIsSubmittingSignUp] = useState(false);
 
@@ -28,7 +26,6 @@ export const useSignUpForm = () => {
       );
       Cookies.set("_client", res.headers["client"], secureCookieOptions);
       Cookies.set("_uid", res.headers["uid"], secureCookieOptions);
-      navigate("/work_times");
     } catch (e) {
       console.log(e);
       setIsSubmittingSignUp(false);
