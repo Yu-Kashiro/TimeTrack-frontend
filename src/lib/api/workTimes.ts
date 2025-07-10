@@ -9,7 +9,7 @@ export const getWorkTimesAll = () => {
   return client.get("/work_times", { headers });
 };
 
-export const getWorkTimes = (id: string) => {
+export const getWorkTime = (id: string) => {
   const headers = getAuthHeaders();
   if (!headers) return;
 

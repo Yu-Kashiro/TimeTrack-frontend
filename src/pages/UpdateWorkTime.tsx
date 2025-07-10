@@ -1,4 +1,4 @@
-import { getWorkTimes, updateWorkTime } from "@/lib/api/workTimes";
+import { getWorkTime, updateWorkTime } from "@/lib/api/workTimes";
 import { Layout } from "@/lib/components/Layout";
 import { MainButton } from "@/lib/components/MainButton";
 import { useLoginCheck } from "@/lib/hooks/useLoginCheck";
@@ -58,7 +58,7 @@ export const UpdateWorkTime = () => {
       try {
         if (!workTimeId) return;
 
-        const response = await getWorkTimes(workTimeId);
+        const response = await getWorkTime(workTimeId);
         if (response && response.data) {
           const data = response.data;
 

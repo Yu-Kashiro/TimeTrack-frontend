@@ -1,4 +1,4 @@
-import { deleteWorkTimes, getWorkTimes } from "@/lib/api/workTimes";
+import { deleteWorkTimes, getWorkTime } from "@/lib/api/workTimes";
 import { Layout } from "@/lib/components/Layout";
 import { MainButton } from "@/lib/components/MainButton";
 import { Box, Spinner, Table } from "@chakra-ui/react";
@@ -40,7 +40,7 @@ export const WorkTimeDetail = () => {
     const initialize = async () => {
       try {
         if (!workTimeId) return;
-        const fetchWorkTimes = await getWorkTimes(workTimeId);
+        const fetchWorkTimes = await getWorkTime(workTimeId);
         if (fetchWorkTimes && fetchWorkTimes.data) {
           setWorkTimesItem(fetchWorkTimes.data);
         }
