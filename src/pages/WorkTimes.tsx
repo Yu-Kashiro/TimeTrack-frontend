@@ -1,11 +1,5 @@
 import { getWorkTimesAll } from "@/lib/api/workTimes";
-import {
-  createListCollection,
-  Portal,
-  Select,
-  Stack,
-  Table,
-} from "@chakra-ui/react";
+import { createListCollection, Portal, Select, Table } from "@chakra-ui/react";
 import { useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { Layout } from "@/lib/components/Layout";
@@ -19,12 +13,14 @@ import { LoadingSpinner } from "@/lib/components/LoadingSpinner";
 import { useLogout } from "@/lib/hooks/useLogout";
 import { WorkTimesFooter } from "@/lib/components/WorkTimesFooter";
 import { WorkTimesHeader } from "@/lib/components/WorkTimesHeader";
+import { getCurrentYearMonth } from "@/lib/utils/getCurrentYearMonth";
 
 export const WorkTimes = () => {
   const navigate = useNavigate();
   const [isCheckingLogin, setIsCheckingLogin] = useState(true);
   const [workTimesItems, setWorkTimesItems] = useState<WorkTimesItem[]>([]);
   const { isLoading, setIsLoading, handleLogout } = useLogout();
+  const [selectedMonth, setSelectedMonth] = useState(getCurrentYearMonth);
 
   useLoginCheck({
     redirectIf: "notLoggedIn",
@@ -33,7 +29,7 @@ export const WorkTimes = () => {
   });
 
   useEffect(() => {
-    const initialize = async () => {
+    const fetchWorkTimes = async () => {
       setIsLoading(true);
       try {
         const fetchWorkTimesAll = await getWorkTimesAll();
@@ -46,16 +42,8 @@ export const WorkTimes = () => {
         setIsLoading(false);
       }
     };
-    initialize();
-  }, [isCheckingLogin]);
-
-  const [selectedMonth, setSelectedMonth] = useState<string>(() => {
-    const now = new Date();
-    return `${now.getFullYear()}年${String(now.getMonth() + 1).padStart(
-      2,
-      "0",
-    )}月`;
-  });
+    fetchWorkTimes();
+  }, [setIsLoading]);
 
   const filteredItems = workTimesItems.filter((item) => {
     const selectedMonthDash = selectedMonth
@@ -101,85 +89,83 @@ export const WorkTimes = () => {
 
   return (
     <Layout title="勤務一覧">
-      <Stack gap="4">
-        <Select.Root
-          collection={uniqueMonthListCollection}
-          value={[selectedMonth]}
-          onValueChange={(e) => setSelectedMonth(e.value[0])}
-          size="md"
-          defaultValue={[selectedMonth]} //初期値は現在の年月
-        >
-          <Select.HiddenSelect />
-          <Select.Control>
-            <Select.Trigger>
-              <Select.ValueText placeholder="年月を選択してください" />
-            </Select.Trigger>
-            <Select.IndicatorGroup>
-              <Select.Indicator />
-            </Select.IndicatorGroup>
-          </Select.Control>
-          <Portal>
-            <Select.Positioner>
-              <Select.Content
-                bg="white"
-                borderColor="gray.200"
-                boxShadow="md"
-                className="chakra-theme light"
-              >
-                {uniqueMonthListCollection.items.map((uniqueMonth) => (
-                  <Select.Item
-                    item={uniqueMonth}
-                    key={uniqueMonth.value}
-                    bg="white"
-                    color="black"
-                    _hover={{ bg: "gray.50" }}
-                    _selected={{ bg: "blue.50", color: "blue.600" }}
-                  >
-                    {uniqueMonth.label}
-                    <Select.ItemIndicator />
-                  </Select.Item>
-                ))}
-              </Select.Content>
-            </Select.Positioner>
-          </Portal>
-        </Select.Root>
+      <Select.Root
+        collection={uniqueMonthListCollection}
+        value={[selectedMonth]}
+        onValueChange={(e) => setSelectedMonth(e.value[0])}
+        size="md"
+        defaultValue={[selectedMonth]} //初期値は現在の年月
+      >
+        <Select.HiddenSelect />
+        <Select.Control>
+          <Select.Trigger>
+            <Select.ValueText placeholder="年月を選択してください" />
+          </Select.Trigger>
+          <Select.IndicatorGroup>
+            <Select.Indicator />
+          </Select.IndicatorGroup>
+        </Select.Control>
+        <Portal>
+          <Select.Positioner>
+            <Select.Content
+              bg="white"
+              borderColor="gray.200"
+              boxShadow="md"
+              className="chakra-theme light"
+            >
+              {uniqueMonthListCollection.items.map((uniqueMonth) => (
+                <Select.Item
+                  item={uniqueMonth}
+                  key={uniqueMonth.value}
+                  bg="white"
+                  color="black"
+                  _hover={{ bg: "gray.50" }}
+                  _selected={{ bg: "blue.50", color: "blue.600" }}
+                >
+                  {uniqueMonth.label}
+                  <Select.ItemIndicator />
+                </Select.Item>
+              ))}
+            </Select.Content>
+          </Select.Positioner>
+        </Portal>
+      </Select.Root>
 
-        {/* テーブル */}
-        <Table.Root size="sm" variant="outline">
-          <WorkTimesHeader />
+      {/* テーブル */}
+      <Table.Root size="sm" variant="outline">
+        <WorkTimesHeader />
 
-          <Table.Body>
-            {filteredItems.length === 0 ? (
-              <EmptyWorkTimesRow />
-            ) : (
-              filteredItems.map((workTimeItem) => (
-                <WorkTimesRow
-                  key={workTimeItem.id}
-                  id={workTimeItem.id}
-                  workDate={toJapaneseMonthDay(workTimeItem.workDate)}
-                  workHoursAndMinute={
-                    workTimeItem.isPaidHoliday
-                      ? "有給"
-                      : minutesToHoursAndMinutes(workTimeItem.workMinute)
-                  }
-                />
-              ))
-            )}
-          </Table.Body>
-
-          {filteredItems.length > 0 && (
-            <WorkTimesFooter totalWorkMinutes={totalWorkMinutes} />
+        <Table.Body>
+          {filteredItems.length === 0 ? (
+            <EmptyWorkTimesRow />
+          ) : (
+            filteredItems.map((workTimeItem) => (
+              <WorkTimesRow
+                key={workTimeItem.id}
+                id={workTimeItem.id}
+                workDate={toJapaneseMonthDay(workTimeItem.workDate)}
+                workHoursAndMinute={
+                  workTimeItem.isPaidHoliday
+                    ? "有給"
+                    : minutesToHoursAndMinutes(workTimeItem.workMinute)
+                }
+              />
+            ))
           )}
-        </Table.Root>
+        </Table.Body>
 
-        <MainButton
-          colorPalette={"blue"}
-          color={"black"}
-          onClick={() => navigate("/work_times/registration")}
-        >
-          勤務時間を登録する
-        </MainButton>
-      </Stack>
+        {filteredItems.length > 0 && (
+          <WorkTimesFooter totalWorkMinutes={totalWorkMinutes} />
+        )}
+      </Table.Root>
+
+      <MainButton
+        colorPalette={"blue"}
+        color={"black"}
+        onClick={() => navigate("/work_times/registration")}
+      >
+        勤務時間を登録する
+      </MainButton>
 
       <MainButton onClick={() => handleLogout()}>ログアウトする</MainButton>
     </Layout>
