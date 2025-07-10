@@ -28,3 +28,13 @@ export const WorkTimesRow = ({
     </Table.Row>
   );
 };
+
+export const EmptyWorkTimesRow = () => {
+  return(
+  <Table.Row>
+    <Table.Cell colSpan={3} textAlign="center" p="8">
+      選択した年月の勤務実績はありません
+    </Table.Cell>
+  </Table.Row>
+  );
+};

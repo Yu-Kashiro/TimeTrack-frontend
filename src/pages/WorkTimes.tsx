@@ -9,7 +9,7 @@ import {
 import { useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { Layout } from "@/lib/components/Layout";
-import { WorkTimesRow } from "@/lib/components/WorkTimesRow";
+import { EmptyWorkTimesRow, WorkTimesRow } from "@/lib/components/WorkTimesRow";
 import { MainButton } from "@/lib/components/MainButton";
 import { minutesToHoursAndMinutes } from "@/lib/utils/minutesToHoursAndMinutes";
 import { toJapaneseMonthDay } from "@/lib/utils/toJapaneseMonthDay";
@@ -17,6 +17,8 @@ import { useLoginCheck } from "@/lib/hooks/useLoginCheck";
 import type { WorkTimesItem } from "@/types/workTimesItem";
 import { LoadingSpinner } from "@/lib/components/LoadingSpinner";
 import { useLogout } from "@/lib/hooks/useLogout";
+import { WorkTimesFooter } from "@/lib/components/WorkTimesFooter";
+import { WorkTimesHeader } from "@/lib/components/WorkTimesHeader";
 
 export const WorkTimes = () => {
   const navigate = useNavigate();
@@ -83,15 +85,12 @@ export const WorkTimes = () => {
   });
 
   // 勤務時間の合計を算出
-  const totalWorkMinutes = () => {
-    return filteredItems
-      .filter((item) => !item.isPaidHoliday)
-      .reduce((sum, item) => sum + item.workMinute, 0);
-  };
+  const totalWorkMinutes = filteredItems
+    .filter((item) => !item.isPaidHoliday)
+    .reduce((sum, item) => sum + item.workMinute, 0);
 
   if (isCheckingLogin) return null;
 
-  // ここでローディング中はスピナーだけ表示
   if (isLoading) {
     return (
       <Layout title="勤務一覧">
@@ -147,33 +146,21 @@ export const WorkTimes = () => {
 
         {/* テーブル */}
         <Table.Root size="sm" variant="outline">
-          <Table.Header>
-            <Table.Row>
-              <Table.ColumnHeader textAlign="center">日付</Table.ColumnHeader>
-              <Table.ColumnHeader textAlign="center">
-                勤務時間
-              </Table.ColumnHeader>
-              <Table.ColumnHeader textAlign="center">詳細</Table.ColumnHeader>
-            </Table.Row>
-          </Table.Header>
+          <WorkTimesHeader />
 
           <Table.Body>
             {filteredItems.length === 0 ? (
-              <Table.Row>
-                <Table.Cell colSpan={3} textAlign="center" p="8">
-                  選択した年月の勤務実績はありません
-                </Table.Cell>
-              </Table.Row>
+              <EmptyWorkTimesRow />
             ) : (
-              filteredItems.map((workTimesItem) => (
+              filteredItems.map((workTimeItem) => (
                 <WorkTimesRow
-                  key={workTimesItem.id}
-                  id={workTimesItem.id}
-                  workDate={toJapaneseMonthDay(workTimesItem.workDate)}
+                  key={workTimeItem.id}
+                  id={workTimeItem.id}
+                  workDate={toJapaneseMonthDay(workTimeItem.workDate)}
                   workHoursAndMinute={
-                    workTimesItem.isPaidHoliday
+                    workTimeItem.isPaidHoliday
                       ? "有給"
-                      : minutesToHoursAndMinutes(workTimesItem.workMinute)
+                      : minutesToHoursAndMinutes(workTimeItem.workMinute)
                   }
                 />
               ))
@@ -181,15 +168,7 @@ export const WorkTimes = () => {
           </Table.Body>
 
           {filteredItems.length > 0 && (
-            <Table.Footer>
-              <Table.Row>
-                <Table.Cell textAlign="center">合計</Table.Cell>
-                <Table.Cell textAlign="center">
-                  {minutesToHoursAndMinutes(totalWorkMinutes())}
-                </Table.Cell>
-                <Table.Cell textAlign="center">ー</Table.Cell>
-              </Table.Row>
-            </Table.Footer>
+            <WorkTimesFooter totalWorkMinutes={totalWorkMinutes} />
           )}
         </Table.Root>
 
