@@ -8,7 +8,6 @@ import {
 } from "@chakra-ui/react";
 import { useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
-import { signOut } from "@/lib/api/auth";
 import { Layout } from "@/lib/components/Layout";
 import { WorkTimesRow } from "@/lib/components/WorkTimesRow";
 import { MainButton } from "@/lib/components/MainButton";
@@ -17,13 +16,13 @@ import { toJapaneseMonthDay } from "@/lib/utils/toJapaneseMonthDay";
 import { useLoginCheck } from "@/lib/hooks/useLoginCheck";
 import type { WorkTimesItem } from "@/types/workTimesItem";
 import { LoadingSpinner } from "@/lib/components/LoadingSpinner";
+import { useLogout } from "@/lib/hooks/useLogout";
 
 export const WorkTimes = () => {
   const navigate = useNavigate();
   const [isCheckingLogin, setIsCheckingLogin] = useState(true);
   const [workTimesItems, setWorkTimesItems] = useState<WorkTimesItem[]>([]);
-
-  const [isLoading, setIsLoading] = useState(false);
+  const { isLoading, setIsLoading, handleLogout } = useLogout();
 
   useLoginCheck({
     redirectIf: "notLoggedIn",
@@ -88,17 +87,6 @@ export const WorkTimes = () => {
     return filteredItems
       .filter((item) => !item.isPaidHoliday)
       .reduce((sum, item) => sum + item.workMinute, 0);
-  };
-
-  const handleLogout = async () => {
-    setIsLoading(true);
-    try {
-      await signOut();
-      navigate("/signin");
-    } catch (e) {
-      setIsLoading(false);
-      console.log("ログアウト失敗", e);
-    }
   };
 
   if (isCheckingLogin) return null;
