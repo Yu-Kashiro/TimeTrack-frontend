@@ -1,10 +1,8 @@
 import { getWorkTimesAll } from "@/lib/api/workTimes";
 import {
-  Box,
   createListCollection,
   Portal,
   Select,
-  Spinner,
   Stack,
   Table,
 } from "@chakra-ui/react";
@@ -18,6 +16,7 @@ import { minutesToHoursAndMinutes } from "@/lib/utils/minutesToHoursAndMinutes";
 import { toJapaneseMonthDay } from "@/lib/utils/toJapaneseMonthDay";
 import { useLoginCheck } from "@/lib/hooks/useLoginCheck";
 import type { WorkTimesItem } from "@/types/workTimesItem";
+import { LoadingSpinner } from "@/lib/components/LoadingSpinner";
 
 export const WorkTimes = () => {
   const navigate = useNavigate();
@@ -108,9 +107,7 @@ export const WorkTimes = () => {
   if (isLoading) {
     return (
       <Layout title="勤務一覧">
-        <Box textAlign="center">
-          <Spinner size="sm" />
-        </Box>
+        <LoadingSpinner />
       </Layout>
     );
   }

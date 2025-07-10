@@ -1,7 +1,7 @@
 import { deleteWorkTime, getWorkTime } from "@/lib/api/workTimes";
 import { Layout } from "@/lib/components/Layout";
 import { MainButton } from "@/lib/components/MainButton";
-import { Box, Spinner, Table } from "@chakra-ui/react";
+import { Box, Table } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { DeleteButton } from "@/lib/components/DeleteButton";
@@ -10,6 +10,7 @@ import type { WorkTimesItem } from "@/types/workTimesItem";
 import { useLoginCheck } from "@/lib/hooks/useLoginCheck";
 import { toJapaneseYearMonthDay } from "@/lib/utils/toJapaneseYearMonthDay";
 import { toJapaneseHourMinutes } from "@/lib/utils/toJapaneseHourMinutes";
+import { LoadingSpinner } from "@/lib/components/LoadingSpinner";
 
 export const WorkTimeDetail = () => {
   const navigate = useNavigate();
@@ -129,9 +130,7 @@ export const WorkTimeDetail = () => {
       </MainButton>
 
       {isLoading ? (
-        <Box textAlign="center">
-          <Spinner size="sm" />
-        </Box>
+        <LoadingSpinner />
       ) : (
         <DeleteButton onClick={() => destroyWorkTime()} />
       )}

@@ -9,7 +9,6 @@ import {
   Flex,
   Input,
   NativeSelect,
-  Spinner,
   Switch,
 } from "@chakra-ui/react";
 import type { AxiosError } from "axios";
@@ -21,6 +20,7 @@ import { validateWorkTime } from "@/lib/utils/validateWorkTime";
 import { setTime } from "@/lib/utils/setTime";
 import { BreakHourOptions } from "@/lib/components/BreakHourOptions";
 import { BreakMinuteOptions } from "@/lib/components/BreakMinuteOptions";
+import { LoadingSpinner } from "@/lib/components/LoadingSpinner";
 
 export const Registration = () => {
   const [isCheckingLogin, setIsCheckingLogin] = useState(true);
@@ -205,9 +205,7 @@ export const Registration = () => {
       </Flex>
 
       {isLoading ? (
-        <Box textAlign="center">
-          <Spinner size="sm" />
-        </Box>
+        <LoadingSpinner />
       ) : (
         <MainButton
           colorPalette={"blue"}
