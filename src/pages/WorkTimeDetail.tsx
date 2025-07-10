@@ -1,4 +1,4 @@
-import { deleteWorkTimes, getWorkTime } from "@/lib/api/workTimes";
+import { deleteWorkTime, getWorkTime } from "@/lib/api/workTimes";
 import { Layout } from "@/lib/components/Layout";
 import { MainButton } from "@/lib/components/MainButton";
 import { Box, Spinner, Table } from "@chakra-ui/react";
@@ -28,7 +28,7 @@ export const WorkTimeDetail = () => {
     setIsLoading(true);
     try {
       if (!workTimeId) return;
-      await deleteWorkTimes(workTimeId);
+      await deleteWorkTime(workTimeId);
       navigate("/work_times");
     } catch (e) {
       setIsLoading(false);

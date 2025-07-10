@@ -30,7 +30,7 @@ export const updateWorkTime = (id: string, params: WorkTimeAPIRequest) => {
   return client.put(`/work_times/${id}`, params, { headers });
 };
 
-export const deleteWorkTimes = (id: string) => {
+export const deleteWorkTime = (id: string) => {
   const headers = getAuthHeaders();
   if (!headers) return;
 
