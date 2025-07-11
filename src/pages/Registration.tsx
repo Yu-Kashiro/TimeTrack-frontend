@@ -21,6 +21,7 @@ import { setTime } from "@/lib/utils/setTime";
 import { BreakHourOptions } from "@/lib/components/BreakHourOptions";
 import { BreakMinuteOptions } from "@/lib/components/BreakMinuteOptions";
 import { LoadingSpinner } from "@/lib/components/LoadingSpinner";
+import { ErrorMessage } from "@/lib/components/ErrorMessage";
 
 export const Registration = () => {
   const [isCheckingLogin, setIsCheckingLogin] = useState(true);
@@ -35,6 +36,7 @@ export const Registration = () => {
   const [errorMessages, setErrorMessages] = useState<string[]>([]);
   const navigate = useNavigate();
 
+  // 時間をクリアする関数とデフォルト時間を設定する関数を取得
   const { setClearTime, setDefaultTime } = setTime(
     setClockIn,
     setClockOut,
@@ -42,6 +44,7 @@ export const Registration = () => {
     setBreakDurationMinutes,
   );
 
+// 登録ボタンを押した後の処理
   const createWorkTimeEvent = async ({
     workDate,
     clockIn,
@@ -50,6 +53,7 @@ export const Registration = () => {
     note,
     isPaidHoliday,
   }: RegistrationFormProps) => {
+    // 最初に入力内容のバリデーション
     const validationResult = validateWorkTime({
       clockIn: clockIn,
       clockOut: clockOut,
@@ -63,9 +67,9 @@ export const Registration = () => {
       return;
     }
 
+    // 入力内容に問題がなければ、APIを呼び出す
     setErrorMessages([]);
     setIsLoading(true);
-
     try {
       await createWorkTime({
         work_time: {
@@ -229,13 +233,9 @@ export const Registration = () => {
         </MainButton>
       )}
 
-      {errorMessages.length > 0 && (
-        <Box color="red" textAlign={"center"}>
-          {errorMessages.map((msg, index) => (
-            <Box key={index}>{msg}</Box>
-          ))}
-        </Box>
-      )}
+      {errorMessages.map((msg, index) => (
+        <ErrorMessage key={index} errorMessage={msg} />
+      ))}
 
       <MainButton onClick={() => navigate("/work_times")}>
         勤務状況を確認する
