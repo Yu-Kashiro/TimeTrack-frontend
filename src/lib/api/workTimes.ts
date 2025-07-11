@@ -9,7 +9,7 @@ export const getWorkTimesAll = () => {
   return client.get("/work_times", { headers });
 };
 
-export const getWorkTimes = (id: string) => {
+export const getWorkTime = (id: string) => {
   const headers = getAuthHeaders();
   if (!headers) return;
 
@@ -30,7 +30,7 @@ export const updateWorkTime = (id: string, params: WorkTimeAPIRequest) => {
   return client.put(`/work_times/${id}`, params, { headers });
 };
 
-export const deleteWorkTimes = (id: string) => {
+export const deleteWorkTime = (id: string) => {
   const headers = getAuthHeaders();
   if (!headers) return;
 

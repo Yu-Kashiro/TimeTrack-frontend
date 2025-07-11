@@ -6,15 +6,15 @@ import { Box } from "@chakra-ui/react/box";
 import { MainButton } from "@/lib/components/MainButton";
 import { Layout } from "@/lib/components/Layout";
 import { ErrorMessage } from "@/lib/components/ErrorMessage";
-import { GuestLoginButton } from "@/lib/components/GuestLoginButton";
 import { useLoginCheck } from "@/lib/hooks/useLoginCheck";
-import { useSignInForm } from "@/lib/hooks/useSignInForm";
 import { useState } from "react";
-import { Spinner } from "@chakra-ui/react/spinner";
+import { LoadingSpinner } from "@/lib/components/LoadingSpinner";
+import { useGuestLogin } from "@/lib/hooks/useGuestLogin";
+import { useSignInForm } from "@/lib/hooks/useSignInForm";
 
 export const SignIn = () => {
   const [isCheckingLogin, setIsCheckingLogin] = useState(true);
-
+  const { isLoading, handleGuestLogin } = useGuestLogin();
   const {
     errorMessage,
     register,
@@ -52,18 +52,22 @@ export const SignIn = () => {
         </Field.Root>
 
         {isSubmittingLogin ? (
-          <Box textAlign="center">
-            <Spinner size="sm" />
-          </Box>
+          <LoadingSpinner />
         ) : (
           <MainButton colorPalette="blue" color="black" disabled={!isValid}>
             ログインする
           </MainButton>
         )}
 
-        <ErrorMessage errorMessage={errorMessage} />
+        {isLoading ? (
+          <LoadingSpinner />
+        ) : (
+          <MainButton type="button" onClick={handleGuestLogin}>
+            ゲストログイン
+          </MainButton>
+        )}
 
-        <GuestLoginButton />
+        <ErrorMessage errorMessage={errorMessage} />
 
         <Box textAlign="center">
           <Link to="../signup">ユーザー登録はこちら</Link>

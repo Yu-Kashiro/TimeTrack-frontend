@@ -9,7 +9,7 @@ import { ErrorMessage } from "@/lib/components/ErrorMessage";
 import { useLoginCheck } from "@/lib/hooks/useLoginCheck";
 import { useState } from "react";
 import { useSignUpForm } from "@/lib/hooks/useSignUpForm";
-import { Spinner } from "@chakra-ui/react/spinner";
+import { LoadingSpinner } from "@/lib/components/LoadingSpinner";
 
 export const SignUp = () => {
   const [isCheckingLogin, setIsCheckingLogin] = useState(true);
@@ -56,9 +56,7 @@ export const SignUp = () => {
         </Field.Root>
 
         {isSubmittingSignUp ? (
-          <Box textAlign="center">
-            <Spinner size="sm" />
-          </Box>
+          <LoadingSpinner />
         ) : (
           <MainButton colorPalette="blue" color="black" disabled={!isValid}>
             登録する

@@ -1,4 +1,4 @@
-import { getWorkTimes, updateWorkTime } from "@/lib/api/workTimes";
+import { getWorkTime, updateWorkTime } from "@/lib/api/workTimes";
 import { Layout } from "@/lib/components/Layout";
 import { MainButton } from "@/lib/components/MainButton";
 import { useLoginCheck } from "@/lib/hooks/useLoginCheck";
@@ -15,7 +15,6 @@ import {
   Flex,
   Input,
   NativeSelect,
-  Spinner,
   Switch,
 } from "@chakra-ui/react";
 import type { AxiosError } from "axios";
@@ -23,6 +22,8 @@ import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { BreakHourOptions } from "@/lib/components/BreakHourOptions";
 import { BreakMinuteOptions } from "@/lib/components/BreakMinuteOptions";
+import { LoadingSpinner } from "@/lib/components/LoadingSpinner";
+import { ErrorMessage } from "@/lib/components/ErrorMessage";
 
 export const UpdateWorkTime = () => {
   const [isCheckingLogin, setIsCheckingLogin] = useState(true);
@@ -38,6 +39,7 @@ export const UpdateWorkTime = () => {
   const navigate = useNavigate();
   const { workTimeId } = useParams();
 
+  // 時間をクリアする関数とデフォルト時間を設定する関数を取得
   const { setClearTime, setDefaultTime } = setTime(
     setClockIn,
     setClockOut,
@@ -45,6 +47,7 @@ export const UpdateWorkTime = () => {
     setBreakDurationMinutes,
   );
 
+  // 更新前の勤務時間データを保持
   const [beforeUpdateWorkTime, setBeforeUpdateWorkTime] = useState<{
     clockIn: string;
     clockOut: string;
@@ -53,12 +56,13 @@ export const UpdateWorkTime = () => {
     isPaidHoliday: boolean;
   } | null>(null);
 
+  // 勤務時間データの取得と初期値設定
   useEffect(() => {
     const fetchBeforeUpdateWorkTime = async () => {
       try {
         if (!workTimeId) return;
 
-        const response = await getWorkTimes(workTimeId);
+        const response = await getWorkTime(workTimeId);
         if (response && response.data) {
           const data = response.data;
 
@@ -117,6 +121,7 @@ export const UpdateWorkTime = () => {
     fetchBeforeUpdateWorkTime();
   }, [workTimeId]);
 
+  // 修正ボタンを押した後の処理
   const updateWorkTimeEvent = async ({
     workDate,
     clockIn,
@@ -139,9 +144,9 @@ export const UpdateWorkTime = () => {
       return;
     }
 
+    // 入力内容に問題がなければ、APIを呼び出す
     setErrorMessages([]);
     setIsLoading(true);
-
     try {
       if (!workTimeId) return;
       await updateWorkTime(workTimeId, {
@@ -294,9 +299,7 @@ export const UpdateWorkTime = () => {
       </Flex>
 
       {isLoading ? (
-        <Box textAlign="center">
-          <Spinner size="sm" />
-        </Box>
+        <LoadingSpinner />
       ) : (
         <MainButton
           colorPalette={"blue"}
@@ -320,13 +323,9 @@ export const UpdateWorkTime = () => {
         </MainButton>
       )}
 
-      {errorMessages.length > 0 && (
-        <Box color="red" textAlign={"center"}>
-          {errorMessages.map((msg, index) => (
-            <Box key={index}>{msg}</Box>
-          ))}
-        </Box>
-      )}
+      {errorMessages.map((msg, index) => (
+        <ErrorMessage key={index} errorMessage={msg} />
+      ))}
 
       <MainButton onClick={() => navigate("/work_times")}>
         勤務状況一覧に戻る
