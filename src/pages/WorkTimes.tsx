@@ -46,13 +46,6 @@ export const WorkTimes = () => {
     fetchWorkTimes();
   }, [setIsLoading]);
 
-  const filteredItems = workTimesItems.filter((item) => {
-    const selectedMonthDash = selectedMonth
-      .replace("年", "-")
-      .replace("月", "");
-    return item.workDate.startsWith(selectedMonthDash);
-  });
-
   // 勤務一覧から、一意の年月を抽出
   const yearAndMonthsSet = new Set<string>();
   workTimesItems.forEach((item) => {
@@ -71,6 +64,14 @@ export const WorkTimes = () => {
         label: month,
         value: month,
       })),
+  });
+
+  // 選択された月に基づいて勤務時間をフィルタリング
+  const filteredItems = workTimesItems.filter((item) => {
+    const selectedMonthDash = selectedMonth
+      .replace("年", "-")
+      .replace("月", "");
+    return item.workDate.startsWith(selectedMonthDash);
   });
 
   // 勤務時間の合計を算出
