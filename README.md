@@ -1,54 +1,74 @@
-# React + TypeScript + Vite
+## はじめに
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+- 本リポジトリは勤務時間管理システム「TimeTrack」のフロントエンド部分に関するものです。
+- 本番環境は以下のURLとなります。  
+  https://time-track-frontend.vercel.app/
+- バックエンド部分は以下のURLからご確認ください。  
+  https://github.com/Yu-Kashiro/TimeTrack-api
 
-Currently, two official plugins are available:
+## このアプリを作成した理由
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- 現在の職場では、一部の職員の勤務時間管理を紙媒体で行っており、非効率で計算作業も発生していました。これらの作業を効率化するために、このアプリを作成しました。
+- 使用者は、主に40代〜60代の女性です。スマートフォン操作に不慣れな方もいるため、シンプルなUIを目指しました。
+- 各個人のスマートフォンで使用する前提のため、モバイル表示に最適化しています。
 
-## Expanding the ESLint configuration
+## アプリ概要
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+- 勤怠時間の記録・編集・削除ができる勤怠管理システムです。
+- 始業時間・終業時間・休憩時間の入力や、有給休暇の管理が可能です。
 
-```js
-export default tseslint.config({
-  extends: [
-    // Remove ...tseslint.configs.recommended and replace with this
-    ...tseslint.configs.recommendedTypeChecked,
-    // Alternatively, use this for stricter rules
-    ...tseslint.configs.strictTypeChecked,
-    // Optionally, add this for stylistic rules
-    ...tseslint.configs.stylisticTypeChecked,
-  ],
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ["./tsconfig.node.json", "./tsconfig.app.json"],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-});
+## デモ動画
+
+- ゲストログイン機能を用意しています。以下の動画を参考に、実際にお試しください。
+
+## 主な機能
+
+### 認証機能
+
+- ユーザー登録・ログイン・ログアウト機能
+- ゲストログイン機能
+
+### 勤怠記録機能
+
+- 出勤時間の新規登録
+- 既存データの編集・更新・削除
+- 有給休暇の記録
+
+## 環境
+
+- 開発言語: TypeScript
+- フレームワーク: React 19.1.0
+- ビルドツール: Vite 6.3.5
+- UIライブラリ: Chakra UI 3.19.1
+- ルーティング: React Router DOM 7.6.1
+- HTTPクライアント: Axios 1.9.0
+- 検証済みOS: macOS Sequoia 15.5（24F74）
+
+## 主なプロジェクト構成
+
+```
+src/
+├── lib/
+│   ├── api/           # API通信関連
+│   ├── components/    # コンポーネント
+│   ├── hooks/         # カスタムフック
+│   └── utils/         # ユーティリティ関数
+├── pages/             # ページコンポーネント
+└── types/             # TypeScript型定義
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+## 制約
 
-```js
-// eslint.config.js
-import reactX from "eslint-plugin-react-x";
-import reactDom from "eslint-plugin-react-dom";
+- バックエンドAPIとの連携が必要です。
+- 認証トークンの有効期限は12時間です。有効期限経過後は再ログインが必要です。
 
-export default tseslint.config({
-  plugins: {
-    // Add the react-x and react-dom plugins
-    "react-x": reactX,
-    "react-dom": reactDom,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended typescript rules
-    ...reactX.configs["recommended-typescript"].rules,
-    ...reactDom.configs.recommended.rules,
-  },
-});
-```
+## 実装予定の機能
+
+- 管理者画面の実装
+- 勤怠データのエクスポート機能
+- 勤怠データの承認機能
+- 残業時間の管理
+
+## おわりに
+
+- 感想・コメント・改善提案等があればIssueやPull Requestをお待ちしております
