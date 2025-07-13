@@ -23,13 +23,12 @@
 
 https://github.com/user-attachments/assets/1f5b5144-0978-4b2b-bc22-ec9cd20ddc27
 
-
-https://github.com/user-attachments/assets/2521b061-afc7-42cd-adc3-887db5b00699
-
 - 新規登録方法
+
 https://github.com/user-attachments/assets/358a4d7e-dc87-4569-b84f-de18b5c77b13
 
 - 通常ログインでCRUD操作
+
 https://github.com/user-attachments/assets/61871314-af98-4a97-b731-5bc366efae5e
 
 ## 主な機能
