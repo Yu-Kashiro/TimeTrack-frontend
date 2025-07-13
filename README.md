@@ -20,6 +20,10 @@
 ## デモ動画
 
 - ゲストログイン機能を用意しています。以下の動画を参考に、実際にお試しください。
+
+https://github.com/user-attachments/assets/1f5b5144-0978-4b2b-bc22-ec9cd20ddc27
+
+
 https://github.com/user-attachments/assets/2521b061-afc7-42cd-adc3-887db5b00699
 
 - 新規登録方法
